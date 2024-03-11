@@ -17,7 +17,6 @@ from .tasks import send_push_notification_recall
 from Shopx.settings import REDIS_TIMEOUT
 from django.core.cache import cache
 
-
 class ProductCreateApiView(CreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
