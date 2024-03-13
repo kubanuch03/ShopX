@@ -34,13 +34,19 @@ class ProductListApiView(ListAPIView):
     search_fields = ["name", "description"]
     ordering_fields = ["name", "price"]
 
-    def get(self, request):
-        recent_words = cache.get('recent_words')
-        if not recent_words:
-            recent_words = Product.objects.order_by('-created_at')[:10]
-            cache.set('recent_words', recent_words, REDIS_TIMEOUT)
-        serializer = ProductSerializer(recent_words, many=True)
-        return Response(serializer.data)
+    def perform_create(self, serializer):
+        # Сохранение записи в кэше
+        cache_key = f"search_history_{self.request.user.id}"
+        search_history = cache.get(cache_key, [])
+        search_history.append(serializer.validated_data['query'])
+        cache.set(cache_key, search_history, REDIS_TIMEOUT)
+        serializer.save(user=self.request.user)
+
+    def list(self, request, *args, **kwargs):
+        # Получение записей из кэша
+        cache_key = f"search_history_{self.request.user.id}"
+        search_history = cache.get(cache_key, [])
+        return Response(search_history)
 
 
 # Представление для получения деталей, обновления и удаления продукта

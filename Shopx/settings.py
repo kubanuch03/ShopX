@@ -216,8 +216,9 @@ CHANNEL_LAYERS = {
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
+        "LOCATION": "redis://redis:6379",
         "OPTIONS": {
+            "db":'1',
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     }
