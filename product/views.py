@@ -13,7 +13,7 @@ from .filters import CustomFilter
 from datetime import datetime
 from rest_framework import permissions
 from .tasks import send_push_notification_recall
-from Shopx.settings import REDIS_TIMEOUT
+# from Shopx.settings import REDIS_TIMEOUT
 from django.core.cache import cache
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
@@ -40,13 +40,13 @@ class ProductListApiView(ListAPIView):
     def HistorySearch(self):
         pass
 
-    @action(
-        methods=['get'],
-        detail=False,
-        url_path='profile',
-        serializer_class=None,
-        permission_classes=[AllowAny]
-    )
+    # @action(
+    #     methods=['get'],
+    #     detail=False,
+    #     url_path='profile',
+    #     serializer_class=None,
+    #     permission_classes=[AllowAny]
+    # )
 
 
     # def get(self, request):

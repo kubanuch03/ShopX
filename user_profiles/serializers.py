@@ -6,10 +6,10 @@ from Category.models import Category,PodCategory
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     password_confirm = serializers.CharField(write_only=True)
-
+    username = serializers.CharField(required=True)
     class Meta:
         model = CustomUser
-        fields = ['email_or_phone','password','password_confirm']
+        fields = ['email_or_phone','username','password','password_confirm']
 
 
     def validate(self, attrs):

@@ -22,6 +22,8 @@ class Room(models.Model):
     slug = models.SlugField(unique=True)
     users = models.ManyToManyField(User, related_name='rooms')
 
+    def __str__(self) -> str:
+        return self.name
 
 class Message(models.Model):
     room = models.ForeignKey(Room, related_name='messages', on_delete=models.CASCADE)
@@ -29,5 +31,10 @@ class Message(models.Model):
     content = models.TextField()
     date_added = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self) -> str:
+        return f'{self.room}'
     class Meta:
         ordering = ('date_added',)
+
+
+

@@ -19,6 +19,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         await self.accept()
 
+    async def websocket_disconnect(self, event):
+        await self.disconnect()
+
     async def disconnect(self):
         await self.channel_layer.group_discard(
             self.room_group_name,
@@ -62,23 +65,28 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }))
 
 
-    @sync_to_async
-    def get_or_create_room(self, sender_username, recipient_username):
-        existing_room = Room.objects.filter(users__username=sender_username).filter(users__username=recipient_username).first()
+    async def get_or_create_room(self, sender_username, recipient_username):
+        sender = await sync_to_async(CustomUser.objects.get)(username=sender_username)
+        recipient = await sync_to_async(CustomUser.objects.get)(username=recipient_username)
+
+        existing_room = await sync_to_async(Room.objects.filter(users=sender).filter(users=recipient).first)()
         if existing_room:
             return existing_room
 
-        sender = CustomUser.objects.get(username=sender_username)
-        recipient = CustomUser.objects.get(username=recipient_username)
         room_name = f"{sender_username}_{recipient_username}"
-        room_slug = room_name.replace(' ', '_')
-        new_room = Room.objects.create(name=room_name, slug=room_slug)
-        new_room.users.add(sender, recipient)
-        return new_room
+        room_slug = f"{sender_username}_{recipient_username}"
+        try:
+            new_room = await sync_to_async(Room.objects.create)(name=room_name, slug=room_slug)
+            await sync_to_async(new_room.users.add)(sender, recipient)
+            return new_room
+        except Exception as e:
+            print(f"Error creating room: {e}")
+            return None
 
-    @sync_to_async
-    def save_message(self, username, room, message):
-        user = CustomUser.objects.get(username=username)
-        room = Room.objects.get(slug=room)
-
-        Message.objects.create(user=user, room=room, content=message)
+    async def save_message(self, username, room, message):
+        try:
+            user = await sync_to_async(CustomUser.objects.get)(username=username)
+            room = await sync_to_async(Room.objects.get)(slug=room)
+            await sync_to_async(Message.objects.create)(user=user, room=room, content=message)
+        except Exception as e:
+            print(f"Error saving message: {e}")
