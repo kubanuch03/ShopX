@@ -15,11 +15,7 @@ class SupportService(models.Model):
 
 
 
-<<<<<<< HEAD
-=======
-from django.db import models
 
->>>>>>> e289b7570f0bcfeb760f1748f686c33f005fbb82
 class Room(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
