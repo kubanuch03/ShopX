@@ -34,19 +34,23 @@ class ProductListApiView(ListAPIView):
     search_fields = ["name", "description"]
     ordering_fields = ["name", "price"]
 
-    def perform_create(self, serializer):
-        # Сохранение записи в кэше
-        cache_key = f"search_history_{self.request.user.id}"
-        search_history = cache.get(cache_key, [])
-        search_history.append(serializer.validated_data['query'])
-        cache.set(cache_key, search_history, REDIS_TIMEOUT)
-        serializer.save(user=self.request.user)
-
-    def list(self, request, *args, **kwargs):
-        # Получение записей из кэша
-        cache_key = f"search_history_{self.request.user.id}"
-        search_history = cache.get(cache_key, [])
-        return Response(search_history)
+  
+#нужен что бы делать шифры для кэша
+   # def get_cache_key(self, request):
+   #     query_params = request.query_params.dict()
+  #      query_params_str = str(sorted(query_params.items()))
+  #      return hashlib.sha256(query_params_str.encode('utf-8')).hexdigest()
+#сохраняет кэш
+    def get(self, request, *args, **kwargs):
+        cached_data = cache.get(request)
+        if cached_data is not None:
+            print(f"Cache hit: {request.method} {request.get_full_path()}")
+            return Response(cached_data)
+        else:
+            print(f"Cache miss: {request.method} {request.get_full_path()}")
+            response = self.list(request, *args, **kwargs)
+            cache.set(request, response.data, timeout=3600)
+            return response
 
 
 # Представление для получения деталей, обновления и удаления продукта
