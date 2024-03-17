@@ -1,7 +1,5 @@
-from channels.generic.websocket import AsyncWebsocketConsumer
-from channels.layers import get_channel_layer
-import json
 
+import json
 
 from user_profiles.models import CustomUser
 from channels.generic.websocket import AsyncWebsocketConsumer
@@ -10,34 +8,28 @@ from asgiref.sync import sync_to_async
 from .models import Room, Message
 
 class ChatConsumer(AsyncWebsocketConsumer):
-
     async def connect(self):
-        # Установка соединения WebSocket
-        await self.accept()
-
-        # Получение id комнаты из URL-адреса
         self.room_name = self.scope['url_route']['kwargs']['room_name']
-        self.room_group_name = 'room_%s' % self.room_name
-        print(f"Подключение+ к комнате {self.room_name}")
-        # Присоединение к комнате
-        #await self.join_room(self.room_name)
+        self.room_group_name = 'chat_%s' % self.room_name
 
-
-
-    async def disconnect(self, close_code):
-        print("выходим disconnect")
-        await self.close()
-        await self.leave_room(self.room_group_name)
-        print("disconnect вызван")
-
-
-    async def leave_room(self, room_group_name):
-        channel_layer = get_channel_layer()
-        print("выходим leave_room")
-        await channel_layer.group_discard(
-            room_group_name,
+        
+        await self.channel_layer.group_add(
+            self.room_group_name,
             self.channel_name
         )
+
+        await self.accept()
+
+    async def websocket_disconnect(self, event):
+        await self.disconnect()
+
+    async def disconnect(self):
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
+
+    # Receive message from WebSocket
     async def receive(self, text_data):
         data = json.loads(text_data)
         print(data)

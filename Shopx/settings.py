@@ -114,6 +114,7 @@ WSGI_APPLICATION = "Shopx.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
+<<<<<<< HEAD
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': config('POSTGRES_DB'),
@@ -121,6 +122,11 @@ DATABASES = {
         'PASSWORD': config('POSTGRES_PASSWORD'),
         'HOST': config('POSTGRES_HOST'),
         'PORT': config('POSTGRES_PORT'),
+=======
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+>>>>>>> e289b7570f0bcfeb760f1748f686c33f005fbb82
     }
 }
 
@@ -182,7 +188,11 @@ EMAIL_HOST_USER = 'tolomushev33@gmail.com'
 EMAIL_HOST_PASSWORD = 'ymiaghfkrwoelcgl'
 
 
+<<<<<<< HEAD
 CELERY_BROKER_URL = 'redis://redis:6379/0'
+=======
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+>>>>>>> e289b7570f0bcfeb760f1748f686c33f005fbb82
 
 
 #DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -212,7 +222,11 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
+<<<<<<< HEAD
             "hosts": [("redis", 6379)],
+=======
+            "hosts": [("127.0.0.1", 6379)],
+>>>>>>> e289b7570f0bcfeb760f1748f686c33f005fbb82
         },
     },
 }
@@ -260,4 +274,8 @@ CORS_ALLOW_HEADERS = [
     "user-agent",
     "x-csrftoken",
     "x-requested-with",
+<<<<<<< HEAD
 ]
+=======
+]
+>>>>>>> e289b7570f0bcfeb760f1748f686c33f005fbb82

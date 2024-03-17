@@ -157,4 +157,8 @@ class LogoutSerializer(serializers.Serializer):
     refresh_token = serializers.CharField()
 
     class Meta:
+<<<<<<< HEAD
         fields = ['refresh_token',]
+=======
+        fields = ['refresh_token',]
+>>>>>>> e289b7570f0bcfeb760f1748f686c33f005fbb82
