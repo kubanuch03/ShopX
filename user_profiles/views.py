@@ -5,11 +5,13 @@ from rest_framework.pagination import PageNumberPagination
 from .services import *
 from .serializers import *
 from drf_spectacular.utils import extend_schema
+from drf_yasg.utils import swagger_auto_schema
 
-# апи для регистрации user sellers wholeseller
+
 class UserRegisterView(CreateUserApiView):
     queryset = CustomUser.objects.all()
     serializer_class = UserRegisterSerializer
+
 
 
 class SellerRegisterView(CreateUserApiView):
@@ -66,7 +68,8 @@ class ForgetPasswordSendCodeView(generics.UpdateAPIView):
 # апи для того чтобы сттать продавцом 
 class BecomeSellerView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
-
+    serializer_class = BecomeSellerSerializer
+    
     def post(self, request, *args, **kwargs):
         user_id = request.user.id
         user = CustomUser.objects.get(id=user_id)
