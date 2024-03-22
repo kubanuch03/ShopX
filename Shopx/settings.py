@@ -235,13 +235,13 @@ CORS_ALLOW_METHODS = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://18.184.52.171",
+    "http://3.71.90.73",
     "http://localhost:5173",
     "http://localhost:3000",
 ]
 
 CORS_ALLOW_ORIGINS = [
-    "http://18.184.52.171",
+    "http://3.71.90.73",
     "http://localhost:5173",
     "http://localhost:3000",
 ]
