@@ -1,6 +1,6 @@
 from drf_yasg.utils import swagger_auto_schema
-from .serializers import *
-from .views import *
+from ..serializers import *
+from ..views import *
 
 
 #========== User Register ================
@@ -9,15 +9,16 @@ user_register_description = """
 
 Необходимые поля:
 {
-    "email": "user@gmail.com",  # Email пользователя
-    "username": "user",          # Имя пользователя
-    "password": "12345678", должен содержать 8 чисел   # Пароль пользователя
-    "password2": "12345678" должен содержать 8 чисел   # Подтверждение пароля
+    "email_or_phone": "user@gmail.com", -> type email # Email пользователя
+    "username": "user", -> type str         # Имя пользователя
+    "password": "string", должен содержать 8 чисел   # Пароль пользователя
+    "password2": "string" должен содержать 8 чисел   # Подтверждение пароля
 }
 
 При успешной регистрации выводит:
 201 - Код был отправлен на указанный реквизит
-Проверяете почту приходит код и этот код отправляете в апи user/verification-register-code
+Проверяете почту приходит код и этот код отправляете в апи user/verification-register-code \n
+там выдается выдается refresh и access токен 
 """
 
 user_register_view = swagger_auto_schema(
@@ -34,14 +35,14 @@ user_login_description = """
 
 Необходимые поля:
 {
-    "email": "user@gmail.com",  # Email пользователя
-    "password": "12345678",      # Пароль пользователя
+    "email_or_phone": "user@gmail.com",  # Email пользователя
+    "password": "string",      # Пароль пользователя
 }
 
 При успешного входа  выводит:
 200 - Код был отправлен на указанный реквизит
-выдается refresh и access токен \n
-При использований какой нибудь апишки в Postman надо прописать в Headers Authorization - JWT {{token}}
+
+
 """
 
 user_login_view = swagger_auto_schema(
