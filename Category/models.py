@@ -3,7 +3,7 @@ from django.db import models
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=200, unique=True)
+    slug = models.SlugField(max_length=200, unique=True,blank=True)
     img = models.ImageField(upload_to="products/%Y/%m/%d", blank=True)
 
     class Meta:

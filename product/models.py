@@ -2,7 +2,8 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from user_profiles.models import CustomUser,SellerProfile
 from Category.models import Category, PodCategory
-
+import re
+from django.core.exceptions import ValidationError
 
 class Product(models.Model):
     category = models.ForeignKey(
@@ -32,6 +33,17 @@ class Product(models.Model):
             models.Index(fields=["name"]),
             models.Index(fields=["-created"]),
         ]
+    def clean(self):
+        super().clean()
+        if not self.name:
+            raise ValidationError("Name cannot be empty")
+
+        if not re.match("^[a-zA-Zа-яА-Я]", self.name, re.IGNORECASE):
+            raise ValidationError("Name should start with a letter")
+
+        if re.search("[^a-zA-Zа-яА-Я0-9\s]", self.name[1:], re.IGNORECASE):
+            raise ValidationError("Name should not contain special characters or digits after the first character")
+
     def __str__(self):
         return self.name
 
