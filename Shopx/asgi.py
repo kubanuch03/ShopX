@@ -13,13 +13,15 @@ django_asgi_app = get_asgi_application()
 
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
-from app_chat.routing import websocket_urlpatterns
+from django.urls import path
 
-# Define the ASGI application
+from app_chat.consumers import ChatConsumer
+
 application = ProtocolTypeRouter({
     "websocket": AuthMiddlewareStack(
-        URLRouter(
-            websocket_urlpatterns
-        )
-    )
+        URLRouter([
+            path('ws/<str:room_name>/', ChatConsumer.as_asgi()),
+        ])
+    ),
+
 })

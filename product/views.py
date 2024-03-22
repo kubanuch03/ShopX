@@ -77,8 +77,14 @@ class RecallListApiView(ListAPIView):
     serializer_class = RecallSerializer
 
     def get_queryset(self):
-        queryset = Recall.objects.filter(product=self.kwargs['pk'])
-        return queryset
+        pk = self.kwargs.get('pk')
+        if pk is not None:
+            queryset = Recall.objects.filter(product=pk)
+            return queryset
+        else:
+            # Обработка случая, когда pk отсутствует в запросе
+            # Например, возвращаем пустой queryset
+            return Recall.objects.none()
 
 
 class RecallViewSet(GenericViewSet):

@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import CustomUser,SellerProfile
 from product.serializers import Product
 from Category.models import Category,PodCategory
-
+from Category.serializers import CategorySerializer, PodCategorySerializer
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     password_confirm = serializers.CharField(write_only=True)
@@ -80,12 +80,12 @@ class SendCodeSerializer(serializers.ModelSerializer):
 
 
 class ForgetPasswordSerializer(serializers.Serializer):
-
+    code = serializers.CharField(max_length=6,write_only=True)
     password = serializers.CharField(max_length=20,write_only=True)
     confirm_password = serializers.CharField(max_length=20,write_only=True)
 
     class Meta:
-        fields = ['password','confirm_password']
+        fields = ['password','confirm_password','code']
 
 
 
@@ -122,16 +122,17 @@ class SellerProfileSerializer(serializers.ModelSerializer):
 
 
 
-class PodCategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PodCategory
-        fields = ('name',)
 
-class CategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        fields = ('name', )
+class BecomeSellerSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    email_or_phone = serializers.CharField()
+    password = serializers.CharField()
+    is_active = serializers.BooleanField()
+    number = serializers.CharField()
 
+    def create(self, validated_data):
+        # Создание нового объекта SellerProfile на основе данных пользователя CustomUser
+        return SellerProfile.objects.create(**validated_data)
 
 class ProductSerializerForMarket(serializers.ModelSerializer):
     category = CategorySerializer()

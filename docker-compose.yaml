@@ -10,8 +10,8 @@ services:
       - .:/app
       - static_volume:/usr/src/app/static
       - media_volume:/usr/src/app/media
-   
-      
+
+
     ports:
       - 8000:8000
     depends_on:
@@ -29,6 +29,7 @@ services:
 
   redis:
     image: "redis:alpine"
+
 
   celery-worker:
     build:
@@ -51,17 +52,18 @@ services:
     depends_on:
       - redis
       - db
-#  daphne:
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    command: daphne -b 0.0.0.0 -p 8000 Shopx.asgi:application
-#    volumes:
-#      - .:/usr/src/app/
-#    depends_on:
-#      - redis
-#      - db
-
+  daphne:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: daphne -b 0.0.0.0 -p 8001 Shopx.asgi:application
+    volumes:
+      - .:/usr/src/app/
+    depends_on:
+      - redis
+      - db
+    ports:
+      - "8001:8001"
 
   nginx:
      build:
@@ -82,4 +84,3 @@ volumes:
   dbdata:
   static_volume:
   media_volume:
- 

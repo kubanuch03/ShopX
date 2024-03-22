@@ -113,6 +113,31 @@ class CheckCode():
                 return Response("Пользователь не найден")
 
 
+class ChangePasswordOnReset:
+
+    def change_password_on_reset(self,request):
+        # user = request.user
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        code = serializer.validated_data.get('code')
+        new_password = serializer.validated_data.get('password')
+        confirm_password = serializer.validated_data.get('confirm_password')
+
+        if new_password != confirm_password:
+            return Response("Пароли не совпадают", status=status.HTTP_400_BAD_REQUEST)
+        
+        check_code_result = CheckCode.check_code(code)
+        if 'error' in check_code_result:
+            return Response(check_code_result['error'], status=status.HTTP_400_BAD_REQUEST)
+
+
+
+        user = CustomUser.objects.get(code=code)
+        user.set_password(new_password)
+        user.save()
+        return "success"
+
+
 
 class ChangePassword:
     
@@ -136,20 +161,6 @@ class ChangePassword:
         except Exception as e:
             return str(e)
         
-    def change_password_on_reset(self,request):
-        user = request.user
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        
-        new_password = serializer.validated_data.get('password')
-        confirm_password = serializer.validated_data.get('confirm_password')
-
-        if new_password != confirm_password:
-            return Response("Пароли не совпадают", status=status.HTTP_400_BAD_REQUEST)
-
-        user.set_password(new_password)
-        user.save()
-        return Response("Пароль был успешно изменен", status=status.HTTP_200_OK)
     
     
     def send_email_code(email_or_phone):
