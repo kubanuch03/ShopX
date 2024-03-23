@@ -50,7 +50,7 @@ class ForgetPasswordView(generics.UpdateAPIView):
         result = ChangePasswordOnReset.change_password_on_reset(self=self,request=request)
 
         if result == "success":
-            return Response("Пароль успешно изменен", status=status.HTTP_200_OK)
+            return Response({"success ":"Пароль успешно изменен"}, status=status.HTTP_200_OK)
         else:
             return Response(result, status=status.HTTP_400_BAD_REQUEST)
 
@@ -183,7 +183,7 @@ class UserResetPasswordView(generics.UpdateAPIView):
             result = ChangePassword.change_password_on_profile(request=request)
 
             if result == "success":
-                return Response("Пароль успешно изменен", status=status.HTTP_200_OK)
+                return Response({"success":"Пароль успешно изменен"}, status=status.HTTP_200_OK)
             else:
                 return Response(result, status=status.HTTP_400_BAD_REQUEST)
 
