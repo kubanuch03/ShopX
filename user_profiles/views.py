@@ -80,7 +80,7 @@ class UserLoginView(generics.CreateAPIView):
         try:
             user = CustomUser.objects.get(email_or_phone=email_or_phone)
         except CustomUser.DoesNotExist:
-            return Response('The user does not exist')
+            return Response({'error':'The user does not exist'})
         
         refresh = RefreshToken.for_user(user=user)
         access_token = refresh.access_token
@@ -158,7 +158,7 @@ class BecomeSellerView(generics.CreateAPIView):
             is_seller = True)
         
         new_seller.save()
-        return Response(f"Вы успешно стали продавцом{new_seller}", status=status.HTTP_200_OK)
+        return Response({'success':f"Вы успешно стали продавцом{new_seller}"}, status=status.HTTP_200_OK)
 
 
 
