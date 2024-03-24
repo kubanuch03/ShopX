@@ -56,7 +56,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: daphne -b 3.71.90.73 -p 80 Shopx.asgi:application
+    command: daphne -b 0.0.0.0 -p 8001 Shopx.asgi:application
     volumes:
       - .:/usr/src/app/
     depends_on:
