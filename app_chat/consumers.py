@@ -76,7 +76,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def get_or_create_room(self, sender_username, recipient_username):
         sender = await sync_to_async(CustomUser.objects.get)(username=sender_username)
+        print("Sender:", sender)
         recipient = await sync_to_async(CustomUser.objects.get)(username=recipient_username)
+        print("Recipient:", recipient)
 
         existing_room = await sync_to_async(Room.objects.filter(users=sender).filter(users=recipient).first)()
         if existing_room:
