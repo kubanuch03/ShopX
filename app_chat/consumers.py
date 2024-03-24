@@ -47,7 +47,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # Проверяем наличие ключа 'recipient_username' в объекте data
         if 'recipient_username' in data:
             recipient_username = data['recipient_username']
-            room = await self.get_or_create_room(sender_username, recipient_username)
+            sender = await sync_to_async(CustomUser.objects.get)(username=sender_username)
+            recipient = await sync_to_async(CustomUser.objects.get)(username=recipient_username)
+            room = await self.get_or_create_room(sender.id, recipient.id)  # Передаем идентификаторы пользователей
             await self.save_message(sender_username, room.slug, message)
             await self.channel_layer.group_send(
                 room.slug,
@@ -74,22 +76,26 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }))
 
 
-    async def get_or_create_room(self, sender_username, recipient_username):
-        sender = await sync_to_async(CustomUser.objects.get)(username=sender_username)
-        print("Sender:", sender)
-        recipient = await sync_to_async(CustomUser.objects.get)(username=recipient_username)
-        print("Recipient:", recipient)
-
-        existing_room = await sync_to_async(Room.objects.filter(users=sender).filter(users=recipient).first)()
-        if existing_room:
-            return existing_room
-
-        room_name = f"{sender_username}_{recipient_username}"
-        room_slug = f"{sender_username}_{recipient_username}"
+    async def get_or_create_room(self, sender_id, recipient_id):
         try:
+            # Получаем объекты отправителя и получателя по их идентификаторам
+            sender = await sync_to_async(CustomUser.objects.get)(id=sender_id)
+            recipient = await sync_to_async(CustomUser.objects.get)(id=recipient_id)
+
+            # Проверяем существует ли уже комната между этими пользователями
+            existing_room = await sync_to_async(Room.objects.filter(users=sender).filter(users=recipient).first)()
+            if existing_room:
+                return existing_room
+
+            # Создаем название и slug комнаты на основе идентификаторов пользователей
+            room_name = f"room_{sender_id}_{recipient_id}"
+            room_slug = f"room_{sender_id}_{recipient_id}"
+
+            # Создаем новую комнату и добавляем в нее пользователей
             new_room = await sync_to_async(Room.objects.create)(name=room_name, slug=room_slug)
-            print("New room created:", new_room)
             await sync_to_async(new_room.users.add)(sender, recipient)
+            
+            print("New room created:", new_room)
             print("Users added to room")
             return new_room
         except Exception as e:
