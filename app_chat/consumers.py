@@ -49,7 +49,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             recipient_username = data['recipient_username']
             room_slug = f"{sender_username}_{recipient_username}"
 
-            await self.get_or_create_room(sender_username, recipient_username, room_slug)
+            await self.get_or_create_room(sender_username, recipient_username)
 
             await self.save_message(sender_username, room_slug, message)
             await self.channel_layer.group_send(
