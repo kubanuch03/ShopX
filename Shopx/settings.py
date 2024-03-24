@@ -173,8 +173,6 @@ EMAIL_HOST_USER = 'tolomushev33@gmail.com'
 EMAIL_HOST_PASSWORD = 'ymiaghfkrwoelcgl'
 
 
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-# CELERY_BROKER_URL = 'redis://redis:6379/0'
 
 
 #DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -199,13 +197,13 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("JWT",),
 }
 
+CHANNELS_REDIS_HOST = config('CHANNELS_REDIS_HOST')
 
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
-            # "hosts": [("redis", 6379)],
+           "hosts": [(CHANNELS_REDIS_HOST, 6379)],
         },
     },
 }
@@ -219,8 +217,8 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'tolomushev33@gmail.com'
 EMAIL_HOST_PASSWORD = 'ymiaghfkrwoelcgl'
 
-
-CELERY_BROKER_URL = 'redis://redis:6379/0'
+CELERY_REDIS =  config('CELERY_REDIS')
+CELERY_BROKER_URL = f'redis://{CELERY_REDIS}:6379/0'
 
 
 CORS_ALLOW_METHODS = [
