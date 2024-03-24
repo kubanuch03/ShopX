@@ -47,10 +47,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # Проверяем наличие ключа 'recipient_username' в объекте data
         if 'recipient_username' in data:
             recipient_username = data['recipient_username']
-            room = await self.get_or_create_room(sender_username, recipient_username)
-            await self.save_message(sender_username, room.slug, message)
+            room_slug = f"{sender_username}_{recipient_username}"
+
+            await self.get_or_create_room(sender_username, recipient_username, room_slug)
+
+            await self.save_message(sender_username, room_slug, message)
             await self.channel_layer.group_send(
-                room.slug,
+                room_slug,
                 {
                     'type': 'chat_message',
                     'message': message,
@@ -96,10 +99,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
             print(f"Error creating room: {e}")
             return None
 
-    async def save_message(self, username, room, message):
+    async def save_message(self, sender_username, room_slug, message):
         try:
-            user = await sync_to_async(CustomUser.objects.get)(username=username)
-            room = await sync_to_async(Room.objects.get)(slug=room)
+            user = await sync_to_async(CustomUser.objects.get)(username=sender_username)
+            room = await sync_to_async(Room.objects.get)(slug=room_slug)
             await sync_to_async(Message.objects.create)(user=user, room=room, content=message)
+
+            await self.channel_layer.group_send(
+            room_slug,
+            {
+                'type': 'chat_message',
+                'message': message,
+                'username': sender_username
+            }
+        )
         except Exception as e:
             print(f"Error saving message: {e}")
