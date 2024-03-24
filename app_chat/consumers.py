@@ -88,7 +88,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         room_slug = f"{sender_username}_{recipient_username}"
         try:
             new_room = await sync_to_async(Room.objects.create)(name=room_name, slug=room_slug)
+            print("New room created:", new_room)
             await sync_to_async(new_room.users.add)(sender, recipient)
+            print("Users added to room")
             return new_room
         except Exception as e:
             print(f"Error creating room: {e}")
