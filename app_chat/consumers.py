@@ -75,13 +75,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
     async def get_or_create_room(self, sender_username, recipient_username):
+        # Получаем отправителя и получателя асинхронно
         sender = await sync_to_async(CustomUser.objects.get)(username=sender_username)
         recipient = await sync_to_async(CustomUser.objects.get)(username=recipient_username)
 
-        existing_room = await sync_to_async(Room.objects.filter(users=sender).filter(users=recipient).first)()
+        # Проверяем, существует ли комната уже
+        existing_room = await sync_to_async(Room.objects.filter(users__in=[sender, recipient]).first)()
         if existing_room:
             return existing_room
 
+        # Создаем новую комнату
         room_name = f"{sender_username}_{recipient_username}"
         room_slug = f"{sender_username}_{recipient_username}"
         try:
@@ -89,7 +92,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await sync_to_async(new_room.users.add)(sender, recipient)
             return new_room
         except Exception as e:
-            print(f"Error creating room: {e}")  # Вывод отладочной информации об ошибке создания комнаты
+            print(f"Error creating room: {e}")
             return None
 
     async def save_message(self, username, room, message):
