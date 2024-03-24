@@ -56,10 +56,8 @@ INSTALLED_APPS = [
     'notification',
     # app
     "Category",
-    "app_comment",
     "app_support_service",
     "product",
-    'app_like',
     "app_chat",
     "user_profiles"
 ]

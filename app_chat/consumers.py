@@ -89,7 +89,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await sync_to_async(new_room.users.add)(sender, recipient)
             return new_room
         except Exception as e:
-            print(f"Error creating room: {e}")
+            print(f"Error creating room: {e}")  # Вывод отладочной информации об ошибке создания комнаты
             return None
 
     async def save_message(self, username, room, message):

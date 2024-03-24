@@ -28,11 +28,17 @@ def send_verification_code(email_or_phone):
     sender_email = 'tolomushev33@gmail.com'
     recipient_email = email_or_phone
 
-
-    send_mail(subject, message, sender_email, [recipient_email], fail_silently=False)
-    user_obj = CustomUser.objects.get(email_or_phone=email_or_phone)
+    try:
+        user_obj = CustomUser.objects.get(email_or_phone=email_or_phone)
+    except CustomUser.DoesNotExist:
+        user_obj = CustomUser.objects.create(email_or_phone=email_or_phone)
     user_obj.code = verification_code
     user_obj.save()
+
+    send_mail(subject, message, sender_email, [recipient_email], fail_silently=False)
+    # user_obj = CustomUser.objects.get(email_or_phone=email_or_phone)
+    # user_obj.code = verification_code
+    # user_obj.save()
 
 
 
@@ -85,7 +91,7 @@ class CreateUserApiView(mixins.CreateModelMixin,generics.GenericAPIView):
         else:
             send_code_to_number(email_or_phone=int(email_or_phone))
 
-        return Response("Код был отправлен на указанный реквизит", status=status.HTTP_201_CREATED)
+        return Response({"success":"Код был отправлен на указанный реквизит"}, status=status.HTTP_201_CREATED)
 
 
 
@@ -110,7 +116,7 @@ class CheckCode():
                 else:
                     return Response({'status': 'The user is already active'}, status=status.HTTP_202_ACCEPTED)
             except CustomUser.DoesNotExist:
-                return Response("Пользователь не найден")
+                return Response({"error":"Пользователь не найден"})
 
 
 class ChangePasswordOnReset:
@@ -124,7 +130,7 @@ class ChangePasswordOnReset:
         confirm_password = serializer.validated_data.get('confirm_password')
 
         if new_password != confirm_password:
-            return Response("Пароли не совпадают", status=status.HTTP_400_BAD_REQUEST)
+            return Response({"success":"Пароли не совпадают"}, status=status.HTTP_400_BAD_REQUEST)
         
         check_code_result = CheckCode.check_code(code)
         if 'error' in check_code_result:
@@ -135,7 +141,7 @@ class ChangePasswordOnReset:
         user = CustomUser.objects.get(code=code)
         user.set_password(new_password)
         user.save()
-        return "success"
+        return {"success":"change password"}
 
 
 
@@ -149,15 +155,15 @@ class ChangePassword:
         confirm_password = request.data.get('confirm_new_password')
 
         if not check_password(old_password, user.password):
-            return "Старый пароль неверный"
+            return Response({"error":"Старый пароль неверный"})
         
         if new_password != confirm_password:
-            return "Пароли не совпадают"
+            return Response({"error":"Пароли не совпадают"})
 
         try:
             user.set_password(new_password)
             user.save()
-            return "success"
+            return Response({"success":"change password"})
         except Exception as e:
             return str(e)
         
@@ -169,14 +175,14 @@ class ChangePassword:
             CustomUser.objects.get(email_or_phone=email_or_phone)
             if "@" in email_or_phone:
                 send_verification_code(email_or_phone=email_or_phone)
-                return Response("Код был отправлен на ваш email")
+                return Response({"success":"Код был отправлен на ваш email"})
             elif "996" in email_or_phone:
                 send_code_to_number(email_or_phone=int(email_or_phone))
-                return Response("Код был отправлен на ваш номер")
+                return Response({"success":"Код был отправлен на ваш номер"})
             else:
-                return Response("The given data invalid")
+                return Response({"success":"The given data invalid"})
         except CustomUser.DoesNotExist:
-            return Response('Пользователь с таким емейлом не существует')
+            return Response({"success":"Пользователь с таким емейлом не существует"})
         
 
 
