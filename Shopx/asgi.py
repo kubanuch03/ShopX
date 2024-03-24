@@ -1,6 +1,6 @@
 import os
 import django
-from django.core.asgi import get_asgi_application
+# from django.core.asgi import get_asgi_application
 
 # Set the Django settings module
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Shopx.settings')
@@ -9,7 +9,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Shopx.settings')
 django.setup()
 
 # Get the ASGI application
-django_asgi_app = get_asgi_application()
+# django_asgi_app = get_asgi_application()
 
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
