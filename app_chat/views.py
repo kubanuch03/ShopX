@@ -54,20 +54,7 @@ class RoomDeleteAPIView(generics.DestroyAPIView):
         user = self.request.user
         return Room.objects.filter(users=user)
 
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        if instance.creator == request.user:  # Проверяем, является ли пользователь создателем чата
-            instance.deleted_by_creator = True  # Устанавливаем флаг удаления для создателя
-            instance.save()
-            if instance.deleted_by_receiver:  # Если оба пользователи удалили чат
-                instance.delete()  # То удаляем чат из базы данных
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        else:
-            instance.deleted_by_receiver = True  # Устанавливаем флаг удаления для присоединившегося пользователя
-            instance.save()
-            if instance.deleted_by_creator:  # Если оба пользователи удалили чат
-                instance.delete()  # То удаляем чат из базы данных
-            return Response(status=status.HTTP_204_NO_CONTENT)
+    
 
 
 

@@ -108,7 +108,7 @@ class RecallViewSet(GenericViewSet):
         
         send_push_notification_recall.delay(title, whom)
         
-        return Response('Отзыв был отправлен продавцу')
+        return Response({'success':'Отзыв был отправлен продавцу'})
     
     
     def retrieve(self, request, pk=None):
@@ -131,7 +131,7 @@ class RecallViewSet(GenericViewSet):
         instance = self.get_object()
         if instance.user == self.request.user:
             instance.delete()
-            return Response('Recall is deleted')
+            return Response({'success':'Recall is deleted'})
 
 
 class LikeView(generics.RetrieveDestroyAPIView):
@@ -143,7 +143,7 @@ class LikeView(generics.RetrieveDestroyAPIView):
         instance = self.get_object()
         like = Like.objects.filter(user=self.request.user, product=instance)
         if like:
-            return Response("Like was already created")
+            return Response({"success":"Like was already created"})
         else:
             Like.objects.create(user=self.request.user, product=instance)
             return Response("Like created")
@@ -153,6 +153,6 @@ class LikeView(generics.RetrieveDestroyAPIView):
         like = Like.objects.filter(user=self.request.user, product=instance)
         if like:
             like.delete()
-            return Response("Like is deleted")
+            return Response({"succes":"Like is deleted"})
         else:
-            return Response("No Like")
+            return Response({"success":"No Like"})

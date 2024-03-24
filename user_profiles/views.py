@@ -32,12 +32,23 @@ class LogoutAPIView(generics.GenericAPIView):
 #отправить код на почту       
 class ForgetPasswordSendCodeView(generics.UpdateAPIView):
     serializer_class = SendCodeSerializer
-    http_method_names = ['post',]
+    http_method_names = ['post']
+
     def post(self, request, *args, **kwargs):
         email_or_phone = request.data.get("email_or_phone")
         if not email_or_phone:
-            return Response({"required":"email_or_phone"},status=status.HTTP_400_BAD_REQUEST)
-        return ChangePassword.send_email_code(email_or_phone=email_or_phone)
+            return Response({"required": "email_or_phone"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = CustomUser.objects.get(email_or_phone=email_or_phone)
+            # Если пользователь уже существует, просто обновите его код подтверждения и отправьте его
+            send_verification_code(email_or_phone=email_or_phone)
+            return Response({"success":"Код был отправлен на почту/телефон"}, status=status.HTTP_200_OK)
+        except CustomUser.DoesNotExist:
+            # Если пользователь не существует, создайте нового пользователя и отправьте ему код подтверждения
+            user = CustomUser.objects.create(email_or_phone=email_or_phone)
+            send_verification_code(email_or_phone=email_or_phone)
+            return Response({"success":"Код был отправлен на почту/телефон"}, status=status.HTTP_201_CREATED)
 
 
 # если user забыл пароль при входе
@@ -50,7 +61,7 @@ class ForgetPasswordView(generics.UpdateAPIView):
         result = ChangePasswordOnReset.change_password_on_reset(self=self,request=request)
 
         if result == "success":
-            return Response("Пароль успешно изменен", status=status.HTTP_200_OK)
+            return Response({"success ":"Пароль успешно изменен"}, status=status.HTTP_200_OK)
         else:
             return Response(result, status=status.HTTP_400_BAD_REQUEST)
 
@@ -80,7 +91,7 @@ class UserLoginView(generics.CreateAPIView):
         try:
             user = CustomUser.objects.get(email_or_phone=email_or_phone)
         except CustomUser.DoesNotExist:
-            return Response('The user does not exist')
+            return Response({'error':'The user does not exist'})
         
         refresh = RefreshToken.for_user(user=user)
         access_token = refresh.access_token
@@ -158,7 +169,7 @@ class BecomeSellerView(generics.CreateAPIView):
             is_seller = True)
         
         new_seller.save()
-        return Response(f"Вы успешно стали продавцом{new_seller}", status=status.HTTP_200_OK)
+        return Response({'success':f"Вы успешно стали продавцом{new_seller}"}, status=status.HTTP_200_OK)
 
 
 
@@ -183,7 +194,7 @@ class UserResetPasswordView(generics.UpdateAPIView):
             result = ChangePassword.change_password_on_profile(request=request)
 
             if result == "success":
-                return Response("Пароль успешно изменен", status=status.HTTP_200_OK)
+                return Response({"success":"Пароль успешно изменен"}, status=status.HTTP_200_OK)
             else:
                 return Response(result, status=status.HTTP_400_BAD_REQUEST)
 
