@@ -24,11 +24,15 @@ class Room(models.Model):
     def __str__(self) -> str:
         return self.name
 
+    # class Meta:
+    #     ordering = ['-created_at']
+
 class Message(models.Model):
     room = models.ForeignKey(Room, related_name='messages', on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name='messages', on_delete=models.CASCADE)
     content = models.TextField()
     date_added = models.DateTimeField(auto_now_add=True)
+    is_deleted = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return f'{self.room}'
