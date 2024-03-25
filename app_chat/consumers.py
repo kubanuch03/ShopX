@@ -19,7 +19,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = 'room_%s' % self.room_name
 
-        
 
 
         #======Проведение аутентификации пользователя============================
@@ -33,13 +32,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.close()
             return
         
-
-        # Проверка наличия комнаты
-
-        
-        # await self.get_room_by_slug(self.room_name,sender_username, recipient_username)
-        
-
 
         # Подключение к комнате
         await self.channel_layer.group_add(
@@ -56,7 +48,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
 
-
+#=== Комната ==========================================================================================================
 
 
     async def receive(self, text_data):
@@ -94,7 +86,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 self.close()
                 
             
-
+# ============= Сообщения ================================================================
 
     async def send_message(self, room_name, message, sender_username):
         channel_layer = get_channel_layer()
@@ -102,6 +94,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             # Формируем имя группы
             print(f'Send message: Комната нашлась ')
             group_name = f"room_{room_name}"
+            await self.save_message(sender_username, room_name, message)
             # Отправляем сообщение в группу
             await channel_layer.group_send(
                 group_name,
@@ -126,8 +119,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'username': username
         }))
 
-    # async def save_message(self, room, sender_username, message):
-    #     pass
+    async def save_message(self, username, room, message):
+        try:
+            user = await sync_to_async(CustomUser.objects.get)(username=username)
+            room = await sync_to_async(Room.objects.get)(slug=room)
+            await sync_to_async(Message.objects.create)(user=user, room=room, content=message)
+            print(f"Сохраняем сообщение")
+        except Exception as e:
+            print(f"Error saving message: {e}")
 # await self.send(text_data=json.dumps({'status': 'error', 'message': 'Authentication failed'}))
 
 #=========== Авторизация ==============================================

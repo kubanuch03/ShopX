@@ -32,6 +32,7 @@ class Message(models.Model):
     user = models.ForeignKey(User, related_name='messages', on_delete=models.CASCADE)
     content = models.TextField()
     date_added = models.DateTimeField(auto_now_add=True)
+    is_deleted = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return f'{self.room}'
