@@ -40,6 +40,7 @@ urlpatterns = [
     path("category/", include("Category.urls")),
     path("products/", include("product.urls")),
     path('user/', include("user_profiles.urls")),
+    path('baner/', include("app_baner.urls")),
 
 
     

@@ -59,7 +59,8 @@ INSTALLED_APPS = [
     "app_support_service",
     "product",
     "app_chat",
-    "user_profiles"
+    "user_profiles",
+    "app_baner"
 ]
 
 
@@ -202,7 +203,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-           "hosts": [("redis", 6379)],
+           "hosts": [("localhost", 6379)],
         },
     },
 }

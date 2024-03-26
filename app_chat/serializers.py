@@ -4,7 +4,7 @@ from app_chat.models import Room, Message
 class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
-        fields = ['name','slug',]
+        fields = ['name','slug','is_deleted']
 
 
 class MessageSerializer(serializers.ModelSerializer):
