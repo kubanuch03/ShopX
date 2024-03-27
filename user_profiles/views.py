@@ -99,7 +99,7 @@ class UserLoginView(generics.CreateAPIView):
             'detail': 'Successfully confirmed your code',
             'id': user.id,
             'email': user.email_or_phone,
-            'refresh-token': str(refresh),
+            'refresh': str(refresh),
             'access': str(access_token),
             'refresh_lifetime_days': refresh.lifetime.days,
             'access_lifetime_seconds': access_token.lifetime.total_seconds()

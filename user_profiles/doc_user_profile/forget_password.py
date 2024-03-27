@@ -44,7 +44,7 @@ user_forget_password_reset_description = """
 """
 
 user_forget_password_reset_view = swagger_auto_schema(
-    request_body=SendCodeSerializer,
-    responses={200: SendCodeSerializer},
+    request_body=ForgetPasswordSerializer,
+    responses={200: ForgetPasswordSerializer},
     operation_description=user_forget_password_reset_description
-)(ForgetPasswordSendCodeView.as_view())
+)(ForgetPasswordView.as_view())
