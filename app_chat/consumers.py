@@ -76,8 +76,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
     async def get_room_by_slug(self,room_name,sender_username, recipient_username):
-        sender = await sync_to_async(CustomUser.objects.get)(username=sender_username)
-        recipient = await sync_to_async(CustomUser.objects.get)(username=recipient_username)
+        sender = await sync_to_async(CustomUser.objects.filter)(username=sender_username)
+        recipient = await sync_to_async(CustomUser.objects.filter)(username=recipient_username)
         try:
             room = await database_sync_to_async(Room.objects.get)(name=room_name)
             print(f"get_room_by_slug Комната нашлась {room}")
