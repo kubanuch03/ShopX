@@ -16,11 +16,13 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from django.urls import path
 
 from app_chat.consumers import ChatConsumer
+from app_support_service.consumers import SupportChatConsumer
 
 application = ProtocolTypeRouter({
     "websocket": AuthMiddlewareStack(
         URLRouter([
             path('ws/<str:room_name>/', ChatConsumer.as_asgi()),
+            path('ws/support/<str:room_name>/', SupportChatConsumer.as_asgi()),
         ])
     ),
 

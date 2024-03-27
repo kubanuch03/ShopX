@@ -59,7 +59,8 @@ INSTALLED_APPS = [
     "app_support_service",
     "product",
     "app_chat",
-    "user_profiles"
+    "user_profiles",
+    "app_baner"
 ]
 
 
