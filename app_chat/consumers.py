@@ -1,16 +1,15 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
+from channels.db import database_sync_to_async
+
 import json
 from jwt import decode, InvalidTokenError
 from django.conf import settings
-from django.db.models import Q
-from channels.db import database_sync_to_async
-from user_profiles.models import CustomUser
-from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
-from asgiref.sync import async_to_sync
+
 from .models import Room, Message
-from django.db.models import Count
+from user_profiles.models import CustomUser
 
 class ChatConsumer(AsyncWebsocketConsumer):
 
@@ -24,7 +23,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         #======Проведение аутентификации пользователя============================
         headers = dict(self.scope['headers'])
-        token = headers.get(b'authorization', b'').decode('utf-8').split(' ')[-1]
+        token = headers.get(b'Authorization', b'').decode('utf-8').split(' ')[-1]
         if not token:
             await self.close()
 
@@ -182,7 +181,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 #=========== Авторизация ==============================================
     def get_token(self):
         headers = dict(self.scope['headers'])
-        authorization_header = headers.get(b'authorization', b'')
+        authorization_header = headers.get(b'Authorization', b'')
         if authorization_header:
             token = authorization_header.decode('utf-8').split(' ')[-1]
             return token
