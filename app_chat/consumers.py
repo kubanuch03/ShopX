@@ -23,7 +23,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         #======Проведение аутентификации пользователя============================
         headers = dict(self.scope['headers'])
-        token = headers.get(b'Authorization', b'').decode('utf-8').split(' ')[-1]
+        token = headers.get(b'authorization', b'').decode('utf-8').split(' ')[-1]
         if not token:
             await self.close()
 
@@ -181,7 +181,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 #=========== Авторизация ==============================================
     def get_token(self):
         headers = dict(self.scope['headers'])
-        authorization_header = headers.get(b'Authorization', b'')
+        authorization_header = headers.get(b'authorization', b'')
         if authorization_header:
             token = authorization_header.decode('utf-8').split(' ')[-1]
             return token

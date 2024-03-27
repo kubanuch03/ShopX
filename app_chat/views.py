@@ -1,6 +1,9 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 
+from django.http import Http404
+
+
 from app_chat.models import Room
 from app_chat.serializers import RoomSerializer, MessageSerializer
 
@@ -15,9 +18,9 @@ class RoomRetrieveAPIView(generics.RetrieveAPIView):
     def get_queryset(self):
         user = self.request.user
         # Получить все комнаты, в которых текущий пользователь является создателем
-        created_rooms = Room.objects.filter(users=user)
+        created_rooms = Room.objects.filter(user1=user)
         # Получить все комнаты, в которых текущий пользователь участвует
-        joined_rooms = Room.objects.filter(users=user)
+        joined_rooms = Room.objects.filter(user2=user)
         # Объединить списки созданных и присоединенных комнат
         queryset = created_rooms | joined_rooms
         return queryset.distinct()
@@ -52,7 +55,16 @@ class RoomDeleteAPIView(generics.DestroyAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return Room.objects.filter(users=user)
+        queryset = Room.objects.filter(user1=user)
+        return queryset
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        # Получить объект комнаты, иначе выбросить 404 ошибку
+        obj = queryset.filter(slug=self.kwargs[self.lookup_field]).first()
+        if not obj:
+            raise Http404("Room does not exist")
+        return obj
 
     
 
@@ -66,9 +78,9 @@ class RoomListAPIView(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         # Получить все комнаты, в которых текущий пользователь является создателем
-        created_rooms = Room.objects.filter(users=user)
+        created_rooms = Room.objects.filter(user1=user)
         # Получить все комнаты, в которых текущий пользователь участвует
-        joined_rooms = user.rooms.all()
+        joined_rooms = Room.objects.filter(user2=user)
         # Объединить списки созданных и присоединенных комнат и убрать дубликаты
         queryset = created_rooms.union(joined_rooms)
         return queryset

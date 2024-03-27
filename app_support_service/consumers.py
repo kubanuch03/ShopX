@@ -30,14 +30,15 @@ class SupportChatConsumer(AsyncWebsocketConsumer):
         if not user:
             await self.close()
             return
+        
 
-
+        # Подключение к комнате
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
         )
         await self.accept()
-        print(f'Подключено к группе {self.room_name}')
+        print(f"Подключение+ к комнате {self.room_name}")
 
 #=== Комната ==========================================================================================================
 
@@ -136,7 +137,7 @@ class SupportChatConsumer(AsyncWebsocketConsumer):
             print(f"Сохраняем сообщение")
         except Exception as e:
             print(f"Error saving message: {e}")
-            
+
 #=========== Авторизация ==============================================
     def get_token(self):
         headers = dict(self.scope['headers'])

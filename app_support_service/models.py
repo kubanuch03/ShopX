@@ -4,7 +4,7 @@ from user_profiles.models import CustomUser as User
 
 class SupportServiceRoom(models.Model):
     name = models.CharField(max_length=255)
-    admin = models.OneToOneField(User, on_delete=models.CASCADE,related_name='admin_rooms')
+    admin = models.ForeignKey(User, on_delete=models.CASCADE,related_name='admin_rooms')
     sender = models.ForeignKey(User,on_delete=models.CASCADE,related_name='user_rooms')
     slug = models.SlugField(unique=True)
 
