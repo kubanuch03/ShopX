@@ -1,4 +1,4 @@
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions
 from rest_framework.response import Response
 
 from django.http import Http404
@@ -21,7 +21,7 @@ class SupportRoomRetrieveAPIView(generics.RetrieveAPIView):
         joined_rooms = SupportServiceRoom.objects.filter(sender=user)
         # Объединить списки созданных и присоединенных комнат
         queryset = created_rooms | joined_rooms
-        return queryset.distinct()
+        return queryset
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -57,13 +57,7 @@ class SupportRoomDeleteAPIView(generics.DestroyAPIView):
         queryset = SupportServiceRoom.objects.filter(admin=user)
         return queryset
 
-    def get_object(self):
-        queryset = self.get_queryset()
-        # Получить объект комнаты, иначе выбросить 404 ошибку
-        obj = queryset.filter(slug=self.kwargs[self.lookup_field]).first()
-        if not obj:
-            raise Http404("Room does not exist")
-        return obj
+    
 
     
 
