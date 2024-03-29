@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from .usermanager import CustomUserManager
 from .validators import validate_password_strength
-from rest_framework_simplejwt.tokens import RefreshToken
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     GENDER_CHOICES = {
@@ -10,6 +9,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         'Женщина':'Женщина',
         'Другое':'Другое',
     }
+    auth_token_refresh = models.CharField(max_length=255, null=True, blank=True)
+    auth_token_access = models.CharField(max_length=255, null=True, blank=True)
+    
     gender = models.CharField(max_length=20,choices=GENDER_CHOICES.items())
     username = models.CharField(max_length= 30, verbose_name="Имя",null=True, blank=True)
     surname = models.CharField(max_length= 30, verbose_name="Фамилия",null=True, blank=True)
@@ -41,12 +43,14 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 
 class SellerProfile(CustomUser):
-    market_name = models.CharField(max_length = 50)
-    image = models.ImageField(upload_to='media/profiles')
-    category= models.CharField(max_length=20)
+    shop_name = models.CharField(max_length=255)
+    image = models.ImageField(upload_to='seller/profiles/')
+    category_sc= models.ForeignKey('CategorySC',on_delete=models.CASCADE,blank=True,null=True)
     address = models.CharField(max_length = 50)
+
     location_latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     location_longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+
     instagram_link = models.URLField(null=True, blank=True)
     whatsapp_link = models.URLField(blank=True, null=True)
     tiktok_link = models.URLField(blank=True, null=True)
@@ -60,3 +64,10 @@ class SellerProfile(CustomUser):
         verbose_name = 'Продавец'
         verbose_name_plural = verbose_name
 
+
+
+class CategorySC(models.Model):
+    title = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.title}"

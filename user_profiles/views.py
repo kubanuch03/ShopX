@@ -2,31 +2,30 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.views import APIView
+
 from .services import *
 from .serializers import *
+from .models import CustomUser as User
 from drf_spectacular.utils import extend_schema
 from drf_yasg.utils import swagger_auto_schema
-
+from django.contrib.auth import logout
+from django.core.cache import cache
 
 
 #===================================================================================================================================================================================
-class LogoutAPIView(generics.GenericAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-
+class LogoutView(APIView):
     def post(self, request):
-        refresh_token = request.data.get('refresh_token')
-        user = request.user
-        if refresh_token:
-            try:
-                token = RefreshToken(refresh_token)
-                token.blacklist()
-                user.device_token = None
-                user.save()
-                return Response({'message': 'Вы успешно вышли из системы.'}, status=status.HTTP_200_OK)
-            except Exception as e:
-                return Response({'error': 'Недопустимый токен.'}, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response({'error': 'Токен не предоставлен.'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            token = request.headers.get('Authorization').split(' ')[1]
+            if cache.get(token):
+                return Response({"error": "Токен уже недействителен."}, status=status.HTTP_400_BAD_REQUEST)
+            cache.set(token, True, timeout=None)  # Устанавливаем токен в кэш без срока действия
+            return Response({"message": "Вы успешно вышли из системы."}, status=status.HTTP_200_OK)
+        except AttributeError:
+            return Response({"error": "Отсутствует заголовок Authorization."}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
 
 #отправить код на почту       
