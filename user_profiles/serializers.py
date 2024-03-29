@@ -26,11 +26,12 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     
     
 class SellerRegisterSerializer(serializers.ModelSerializer):
+    email_or_phone = serializers.EmailField(required=True)
     password_confirm = serializers.CharField(write_only=True)
 
     class Meta:
         model = SellerProfile
-        fields = ['email_or_phone','password','password_confirm','market_name','location_latitude',
+        fields = ['email_or_phone','password','password_confirm','shop_name','location_latitude',
                   'location_longitude',]
 
     def validate(self, attrs):
@@ -104,13 +105,15 @@ class SellerProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SellerProfile
-        fields = ['number',
-                  'market_name',
+        fields = [
+                #   'number',
+                  'shop_name',
                   'address',
                   'location_latitude',
                   'location_longitude',
                   'email_or_phone',
-                  'category',
+                  'category_sc',
+
                   'instagram_link',
                   'whatsapp_link',
                   'tiktok_link',
