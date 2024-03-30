@@ -152,7 +152,7 @@ class MarketSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = SellerProfile
-        fields = ('market_name','products', 'location_latitude',
+        fields = ('shop_name','products', 'location_latitude',
                   'location_longitude', 'number', 'email_or_phone', 'is_verified','whatsapp_link','instagram_link','facebook_link','tiktok_link')
 
 
