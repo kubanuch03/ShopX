@@ -19,6 +19,8 @@ class LogoutView(APIView):
         try:
             token = request.headers.get('Authorization').split(' ')[1]
             if cache.get(token):
+
+                
                 return Response({"error": "Токен уже недействителен."}, status=status.HTTP_400_BAD_REQUEST)
             cache.set(token, True, timeout=None)  # Устанавливаем токен в кэш без срока действия
             return Response({"message": "Вы успешно вышли из системы."}, status=status.HTTP_200_OK)
