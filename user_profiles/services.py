@@ -102,8 +102,11 @@ class CheckCode():
                 user = CustomUser.objects.get(code=code)
                 if not user.is_active:
                     user.is_active=True
-                    user.save()
                     refresh = RefreshToken.for_user(user=user)
+                    user.auth_token_refresh = refresh
+                    user.auth_token_access = refresh.access_token
+                    user.save()
+
                     return Response({
                         'detail': 'Successfully confirmed your code',
                         'id':user.id,
