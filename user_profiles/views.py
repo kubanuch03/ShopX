@@ -89,10 +89,17 @@ class UserLoginView(generics.CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         email_or_phone = request.data.get('email_or_phone')
+        password = request.data.get('password')
+
+        if not email_or_phone or not password:
+            return Response({'error':'Both email/phone and password are required'}, status=status.HTTP_400_BAD_REQUEST)
         try:
             user = CustomUser.objects.get(email_or_phone=email_or_phone)
         except CustomUser.DoesNotExist:
             return Response({'error':'The user does not exist'})
+        if not check_password(password, user.password):
+            return Response({'error':'Incorrect password'}, status=status.HTTP_400_BAD_REQUEST)
+        
         
         refresh = RefreshToken.for_user(user=user)
         access_token = refresh.access_token

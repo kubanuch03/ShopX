@@ -1,11 +1,11 @@
 from rest_framework import serializers
 from .models import CustomUser,SellerProfile
 from product.serializers import Product
-from Category.models import Category,PodCategory
 from Category.serializers import CategorySerializer, PodCategorySerializer
 
 class UserRegisterSerializer(serializers.ModelSerializer):
-    password_confirm = serializers.CharField(write_only=True)
+    password_confirm = serializers.CharField(required=True)
+    password = serializers.CharField(required=True,write_only=True)
     username = serializers.CharField(required=True)
     class Meta:
         model = CustomUser
@@ -27,7 +27,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     
 class SellerRegisterSerializer(serializers.ModelSerializer):
     email_or_phone = serializers.EmailField(required=True)
-    password_confirm = serializers.CharField(write_only=True)
+    password = serializers.CharField(required=True,write_only=True)
+    password_confirm = serializers.CharField(required=True,write_only=True)
 
     class Meta:
         model = SellerProfile
@@ -57,10 +58,21 @@ class VerifyCodeSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(required=True)
+    email_or_phone = serializers.CharField(required=True)
     
     class Meta:
         model = CustomUser
         fields = ['email_or_phone','password']
+    
+    def validate(self, attrs):
+        email_or_phone = attrs.get('email_or_phone')
+        password = attrs.get('password')
+
+        if not email_or_phone or not password:
+            raise serializers.ValidationError("Both email/phone and password are required")
+
+        return attrs
 
 
 class ChangePasswordSerializer(serializers.Serializer):
