@@ -25,7 +25,7 @@ def send_verification_code(email_or_phone):
 
     subject = 'Verification Code'
     message = f'Your verification code is: {verification_code}'
-    sender_email = 'tolomushev33@gmail.com'
+    sender_email = 'kubanuch03@gmail.com'
     recipient_email = email_or_phone
 
     try:

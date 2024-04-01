@@ -209,13 +209,17 @@ CHANNEL_LAYERS = {
 }
 
 # EMAIL_CONFIG
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_BACKEND = config("EMAIL_BACKEND")
+EMAIL_HOST = config("EMAIL_HOST")
+EMAIL_PORT = config("EMAIL_PORT")
+EMAIL_USE_TLS = config("EMAIL_USE_TLS")
 
-EMAIL_HOST_USER = 'tolomushev33@gmail.com'
-EMAIL_HOST_PASSWORD = 'ymiaghfkrwoelcgl'
+EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+
+EMAIL_SERVER = config("EMAIL_SERVER")
+DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
+EMAIL_ADMIN = config("EMAIL_ADMIN")
 
 CELERY_BROKER_URL = f'redis://redis:6379/0'
 
