@@ -13,7 +13,7 @@ class PodCategorySerializer(serializers.ModelSerializer):
         read_only_fields = ("id", "slug")
 
 class CategorySerializer(serializers.ModelSerializer):
-    pod_categories = PodCategorySerializer(many=True)
+    pod_categories = PodCategorySerializer(many=True, read_only=True)
     class Meta:
         model = Category
         fields = ("id", "name", "slug", "img", "pod_categories")
