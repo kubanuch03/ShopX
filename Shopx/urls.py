@@ -41,6 +41,7 @@ urlpatterns = [
     path("products/", include("product.urls")),
     path('user/', include("user_profiles.urls")),
     path('baner/', include("app_baner.urls")),
+    path('rec/', include("app_recommendations.urls"))
 
 
     
