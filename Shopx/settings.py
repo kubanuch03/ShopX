@@ -192,12 +192,13 @@ REST_FRAMEWORK = {
 }
 
 
-
+from datetime import timedelta
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": None,
-    "REFRESH_TOKEN_LIFETIME": None,
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=365),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=365),
     "AUTH_HEADER_TYPES": ("JWT",),
 }
+
 
 
 CHANNEL_LAYERS = {
