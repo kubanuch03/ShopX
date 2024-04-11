@@ -29,6 +29,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 class VerifyCodeSerializer(serializers.ModelSerializer):
     
     class Meta:
+        
         model = CustomUser
         fields = ['code']
 
@@ -38,6 +39,7 @@ class LoginSerializer(serializers.ModelSerializer):
     email_or_phone = serializers.CharField(required=True)
     
     class Meta:
+        ref_name = "UserLogin" 
         model = CustomUser
         fields = ['email_or_phone','password']
     

@@ -49,6 +49,7 @@ class LoginSerializer(serializers.ModelSerializer):
     email_or_phone = serializers.CharField(required=True)
     
     class Meta:
+        ref_name = "SellerLogin" 
         model = SellerProfile
         fields = ['email_or_phone','password']
     
