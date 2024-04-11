@@ -1,61 +1,60 @@
 from django.db import models
+from app_user.models import CustomUser
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from .usermanager import CustomUserManager
+from django.contrib.auth.models import Group, Permission
+from django.utils.translation import gettext_lazy as _
 from .validators import validate_password_strength
 
-class CustomUser(AbstractBaseUser, PermissionsMixin):
-    GENDER_CHOICES = {
-        'Мужчина':'Мужчина',
-        'Женщина':'Женщина',
-        'Другое':'Другое',
-    }
-    auth_token_refresh = models.CharField(max_length=255, null=True, blank=True)
-    auth_token_access = models.CharField(max_length=255, null=True, blank=True)
-    
-    gender = models.CharField(max_length=20,choices=GENDER_CHOICES.items())
+from .sellermanager import CustomSellerManager
+class SellerProfile(AbstractBaseUser, PermissionsMixin):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='seller_profile',blank=True,null=True)
+
     username = models.CharField(max_length= 30, verbose_name="Имя",null=True, blank=True)
     surname = models.CharField(max_length= 30, verbose_name="Фамилия",null=True, blank=True)
     password = models.CharField("password",validators=[validate_password_strength], max_length=128)
     email_or_phone = models.CharField(max_length= 30,unique = True,null= True, blank=True)
     code = models.CharField(max_length=6, blank=True)
-    created_at = models.DateField(auto_now=True)
+    shop_name = models.CharField(max_length=255,blank=True,null=True)
+
     is_active = models.BooleanField(default=False)
+    is_seller = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
-    is_verified = models.BooleanField(default=False)
-    number = models.CharField(max_length= 30,unique=True,null= True, blank=True)
-    is_seller = models.BooleanField(default=False, verbose_name="продавец")
-    device_token = models.CharField(max_length = 100, verbose_name = 'токен от ios/android')
 
-    objects = CustomUserManager()
-
-
-    def __str__(self) -> str:
-        return f"{self.username}"
-    
-    class Meta:
-        verbose_name = 'Клиент'
-        verbose_name_plural = verbose_name
-
-    USERNAME_FIELD = 'email_or_phone'
-    REQUIRED_FIELDS = ['username']
-
-
-
-class SellerProfile(CustomUser):
-    shop_name = models.CharField(max_length=255)
     image = models.ImageField(upload_to='seller/profiles/')
     category_sc= models.ForeignKey('CategorySC',on_delete=models.CASCADE,blank=True,null=True)
     address = models.CharField(max_length = 50)
-
     location_latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     location_longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+
+    device_token = models.CharField(max_length = 100, verbose_name = 'токен от ios/android')
 
     instagram_link = models.URLField(null=True, blank=True)
     whatsapp_link = models.URLField(blank=True, null=True)
     tiktok_link = models.URLField(blank=True, null=True)
     facebook_link = models.URLField(blank=True, null=True)
 
+
+    objects = CustomSellerManager()
+    USERNAME_FIELD = 'email_or_phone'
+    REQUIRED_FIELDS = ['username']
+
+    groups = models.ManyToManyField(
+        Group,
+        verbose_name=_('groups'),
+        blank=True,
+        help_text=_('The groups this user belongs to. A user will get all permissions granted to each of their groups.'),
+        related_name='customuser_set',  # Измененное имя обратной связи
+        related_query_name='user',
+    )
+    user_permissions = models.ManyToManyField(
+        Permission,
+        verbose_name=_('user permissions'),
+        blank=True,
+        help_text=_('Specific permissions for this user.'),
+        related_name='customuser_set',  # Измененное имя обратной связи
+        related_query_name='user',
+    )
 
     def __str__(self) -> str:
         return f'Профиль продавца {self.email_or_phone}'

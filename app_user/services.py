@@ -36,9 +36,7 @@ def send_verification_code(email_or_phone):
     user_obj.save()
 
     send_mail(subject, message, sender_email, [recipient_email], fail_silently=False)
-    # user_obj = CustomUser.objects.get(email_or_phone=email_or_phone)
-    # user_obj.code = verification_code
-    # user_obj.save()
+    
 
 
 
@@ -96,30 +94,32 @@ class CreateUserApiView(mixins.CreateModelMixin,generics.GenericAPIView):
 
 
 class CheckCode():
-        @staticmethod
-        def check_code(code):
-            try:
-                user = CustomUser.objects.get(code=code)
-                if not user.is_active:
-                    user.is_active=True
-                    refresh = RefreshToken.for_user(user=user)
-                    user.auth_token_refresh = refresh
-                    user.auth_token_access = refresh.access_token
-                    user.save()
+    @staticmethod
+    def check_code(code):
+        
+        user = CustomUser.objects.get(code=code)
+        
+        
+        user.is_active = True
+        user.is_usual = True
+        user.code = code 
+        refresh = RefreshToken.for_user(user=user)
+        user.auth_token_refresh = refresh
+        user.auth_token_access = refresh.access_token
+        user.save()
 
-                    return Response({
-                        'detail': 'Successfully confirmed your code',
-                        'id':user.id,
-                        'email':user.email_or_phone,
-                        'refresh': str(refresh),
-                        'access': str(refresh.access_token),
-                        'refresh_lifetime_days': refresh.lifetime.days,
-                        'access_lifetime_days': refresh.access_token.lifetime.days
-                    })
-                else:
-                    return Response({'status': 'The user is already active'}, status=status.HTTP_202_ACCEPTED)
-            except CustomUser.DoesNotExist:
-                return Response({"error":"Пользователь не найден"})
+        return Response({
+            'detail': 'Successfully confirmed your code',
+            'is_usual':user.is_usual,
+            'id': user.id,
+            'email': user.email_or_phone,
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+            'refresh_lifetime_days': refresh.lifetime.days,
+            'access_lifetime_days': refresh.access_token.lifetime.days
+        })
+        
+        
 
 
 class ChangePasswordOnReset:

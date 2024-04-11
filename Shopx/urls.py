@@ -39,7 +39,8 @@ urlpatterns = [
     path("support/", include("app_support_service.urls")),
     path("category/", include("Category.urls")),
     path("products/", include("product.urls")),
-    path('user/', include("user_profiles.urls")),
+    path('user/', include("app_user.urls")),
+    path('seller/', include("app_userseller.urls")),
     path('baner/', include("app_baner.urls")),
     path('rec/', include("app_recommendations.urls"))
 

@@ -1,6 +1,7 @@
 from django_filters import rest_framework as filters
 from .models import Product
 
+import django_filters
 
 class CustomFilter(filters.FilterSet):
     created = filters.DateTimeFromToRangeFilter()

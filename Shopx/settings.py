@@ -59,7 +59,8 @@ INSTALLED_APPS = [
     "app_support_service",
     "product",
     "app_chat",
-    "user_profiles",
+    "app_user",
+    "app_userseller",
     "app_baner",
     "app_recommendations",
 ]
@@ -165,14 +166,6 @@ STATIC_ROOT = "/usr/src/app/static"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = "/usr/src/app/media"
 
-# EMAIL_CONFIG
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-
-EMAIL_HOST_USER = 'tolomushev33@gmail.com'
-EMAIL_HOST_PASSWORD = 'ymiaghfkrwoelcgl'
 
 
 
@@ -180,7 +173,7 @@ EMAIL_HOST_PASSWORD = 'ymiaghfkrwoelcgl'
 #DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-AUTH_USER_MODEL = 'user_profiles.CustomUser'
+AUTH_USER_MODEL = 'app_user.CustomUser'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

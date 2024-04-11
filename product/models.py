@@ -1,6 +1,7 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from user_profiles.models import CustomUser,SellerProfile
+from app_user.models import CustomUser
+from app_userseller.models import SellerProfile
 from Category.models import Category, PodCategory
 import re
 from django.core.exceptions import ValidationError

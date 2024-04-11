@@ -13,6 +13,7 @@ from django.contrib.auth import logout
 from django.core.cache import cache
 
 
+
 #===================================================================================================================================================================================
 class LogoutView(APIView):
     def post(self, request):
@@ -67,13 +68,6 @@ class ForgetPasswordView(generics.UpdateAPIView):
             return Response(result, status=status.HTTP_400_BAD_REQUEST)
 
 
-class MarketListAPIView(generics.ListAPIView):
-    queryset = SellerProfile.objects.prefetch_related('products').all()
-    serializer_class = MarketSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    pagination_class = PageNumberPagination
-    pagination_class.page_size = 10
-
 
 # ==== User =============================================================================================================================================================
 
@@ -106,6 +100,7 @@ class UserLoginView(generics.CreateAPIView):
         return Response({
             'detail': 'Successfully confirmed your code',
             'id': user.id,
+            'is_seller': user.is_usual,
             'email': user.email_or_phone,
             'refresh': str(refresh),
             'access': str(access_token),
@@ -125,107 +120,6 @@ class UserVerifyRegisterCode(generics.UpdateAPIView):
         code = serializer.validated_data.get('code')
         return CheckCode.check_code(code=code)
     
-
-# ===== Продавец Seller ====================================================================================================================================================================
-
-class SellerListApiview(generics.ListAPIView):
-    queryset = SellerProfile.objects.all()
-    serializer_class = SellerProfileSerializer
-    permission_classes = [permissions.IsAuthenticated,]
-
-
-class SellerUpdateProfileApi(generics.UpdateAPIView):
-    queryset = SellerProfile.objects.all()
-    serializer_class = SellerProfileSerializer
-    http_method_names = ['patch',]
-    permission_classes = [permissions.IsAuthenticated,]
-    lookup_field = 'id'
-
-
-class SellerDetailProfileApi(generics.RetrieveAPIView):
-    queryset = SellerProfile.objects.all()
-    serializer_class = SellerProfileSerializer
-    lookup_field = 'id'
-
-
-class SellerRegisterView(CreateUserApiView):
-    queryset = SellerProfile.objects.all()
-    serializer_class = SellerRegisterSerializer
-     
-
-
-# апи для того чтобы сттать продавцом 
-class BecomeSellerView(generics.CreateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = BecomeSellerSerializer
-    
-    def post(self, request, *args, **kwargs):
-        user_id = request.user.id
-        user = CustomUser.objects.get(id=user_id)
-        username = user.username
-        email_or_phone = user.email_or_phone
-        password = user.password
-        is_active = user.is_active
-        number = user.number
-        user.delete()
-        new_seller = SellerProfile.objects.create(
-            username=username,
-            email_or_phone=email_or_phone,
-            password=password,
-            is_active=is_active,
-            number = number,
-            is_seller = True)
-        
-        new_seller.save()
-        return Response({'success':f"Вы успешно стали продавцом{new_seller}"}, status=status.HTTP_200_OK)
-
-
-
-
-
-
-
-
-
-
-
-
-# === Profile =========================================================================================================================================================
-    
-# апи менят пароль в профиле 
-class UserResetPasswordView(generics.UpdateAPIView):
-    serializer_class = ChangePasswordSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    http_method_names = ['patch',]
-    def update(self, request, *args, **kwargs):
-            result = ChangePassword.change_password_on_profile(request=request)
-
-            if result == "success":
-                return Response({"success":"Пароль успешно изменен"}, status=status.HTTP_200_OK)
-            else:
-                return Response(result, status=status.HTTP_400_BAD_REQUEST)
-
-class ListProfileApi(generics.ListAPIView):
-    queryset = CustomUser.objects.all()
-    serializer_class = UserProfileSerializer
-
-
-
-class UpdateUserProfileApi(generics.UpdateAPIView):
-    queryset = CustomUser.objects.all()
-    serializer_class = UserProfileSerializer
-    http_method_names = ['patch',]
-    permission_classes = [permissions.IsAuthenticated,]
-    lookup_field = 'id'
-
-class DetailUserProfileApi(generics.RetrieveAPIView):
-    queryset = CustomUser.objects.all()
-    serializer_class = UserProfileSerializer
-    lookup_field = 'id'
-
-
-#==============================================================================================================================================================================
 
 
 

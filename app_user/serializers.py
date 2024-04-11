@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser,SellerProfile
+from .models import CustomUser
 from product.serializers import Product
 from Category.serializers import CategorySerializer, PodCategorySerializer
 
@@ -23,30 +23,6 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         user = CustomUser.objects.create_user(**validated_data)
         return user
         
-    
-    
-class SellerRegisterSerializer(serializers.ModelSerializer):
-    email_or_phone = serializers.EmailField(required=True)
-    password = serializers.CharField(required=True,write_only=True)
-    password_confirm = serializers.CharField(required=True,write_only=True)
-
-    class Meta:
-        model = SellerProfile
-        fields = ['email_or_phone','password','password_confirm','shop_name','location_latitude',
-                  'location_longitude',]
-
-    def validate(self, attrs):
-        if attrs['password'] != attrs['password_confirm']:
-            raise serializers.ValidationError("Пароли не совпадают")
-        return attrs
-    
-
-    def create(self, validated_data):
-        validated_data.pop('password_confirm')
-        user = SellerProfile.objects.create_user(**validated_data)
-        user.is_seller = True
-        user.save()
-        return user
     
 
 
@@ -112,63 +88,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
                   'number',
                   'gender',
                   ]
-        
-class SellerProfileSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = SellerProfile
-        fields = [
-                #   'number',
-                  'shop_name',
-                  'address',
-                  'location_latitude',
-                  'location_longitude',
-                  'email_or_phone',
-                  'category_sc',
-
-                  'instagram_link',
-                  'whatsapp_link',
-                  'tiktok_link',
-                  'facebook_link',
-                  ]
-        
-
-
-
-
-
-
-class BecomeSellerSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    email_or_phone = serializers.CharField()
-    password = serializers.CharField()
-    is_active = serializers.BooleanField()
-    number = serializers.CharField()
-
-    def create(self, validated_data):
-        # Создание нового объекта SellerProfile на основе данных пользователя CustomUser
-        return SellerProfile.objects.create(**validated_data)
-
-class ProductSerializerForMarket(serializers.ModelSerializer):
-    category = CategorySerializer()
-    podcategory = PodCategorySerializer()
-
-    class Meta:
-        model = Product
-        fields = ['name','category','podcategory']
-        
-
-        
-class MarketSerializer(serializers.ModelSerializer):
-    products = ProductSerializerForMarket(many=True, read_only=True)
-    
-    class Meta:
-        model = SellerProfile
-        fields = ('shop_name','products', 'location_latitude',
-                  'location_longitude', 'number', 'email_or_phone', 'is_verified','whatsapp_link','instagram_link','facebook_link','tiktok_link')
-
-
-
+  
 class LogoutSerializer(serializers.Serializer):
     refresh_token = serializers.CharField()
 

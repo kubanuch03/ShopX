@@ -9,7 +9,7 @@ from django.conf import settings
 from asgiref.sync import sync_to_async
 
 from .models import Room, Message
-from user_profiles.models import CustomUser
+from app_user.models import CustomUser
 
 class ChatConsumer(AsyncWebsocketConsumer):
 
