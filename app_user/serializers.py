@@ -38,6 +38,7 @@ class LoginSerializer(serializers.ModelSerializer):
     email_or_phone = serializers.CharField(required=True)
     
     class Meta:
+        ref_name = "UserLogin" 
         model = CustomUser
         fields = ['email_or_phone','password']
     
