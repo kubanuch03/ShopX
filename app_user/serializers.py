@@ -29,7 +29,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 class VerifyCodeSerializer(serializers.ModelSerializer):
     
     class Meta:
-        
+        ref_name = "UserVerify" 
         model = CustomUser
         fields = ['code']
 
@@ -66,6 +66,7 @@ class ChangePasswordSerializer(serializers.Serializer):
 class SendCodeSerializer(serializers.ModelSerializer):
     
     class Meta:
+        ref_name = "UserCode" 
         model = CustomUser
         fields = ['email_or_phone']
 
@@ -76,6 +77,7 @@ class ForgetPasswordSerializer(serializers.Serializer):
     confirm_password = serializers.CharField(max_length=20,write_only=True)
 
     class Meta:
+        ref_name = "UserForget" 
         fields = ['password','confirm_password','code']
 
 
@@ -95,4 +97,5 @@ class LogoutSerializer(serializers.Serializer):
     refresh_token = serializers.CharField()
 
     class Meta:
+        ref_name = "UserLogout" 
         fields = ['refresh_token',]

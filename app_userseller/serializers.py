@@ -40,6 +40,7 @@ class BecomeSellerSerializer(serializers.Serializer):
 class VerifyCodeSerializer(serializers.ModelSerializer):
     
     class Meta:
+        ref_name = "SellerVerify" 
         model = SellerProfile
         fields = ['code']
 
@@ -76,6 +77,7 @@ class LoginSerializer(serializers.ModelSerializer):
 class SendCodeSerializer(serializers.ModelSerializer):
     
     class Meta:
+        ref_name = "SellerCode" 
         model = SellerProfile
         fields = ['email_or_phone']
 
