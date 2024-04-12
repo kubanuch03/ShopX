@@ -12,7 +12,7 @@ from drf_yasg.utils import swagger_auto_schema
 from django.contrib.auth import logout
 from django.core.cache import cache
 
-
+from drf_spectacular.utils import extend_schema_view, extend_schema
 
 #===================================================================================================================================================================================
 class LogoutView(APIView):
@@ -71,6 +71,11 @@ class ForgetPasswordView(generics.UpdateAPIView):
 
 # ==== User =============================================================================================================================================================
 
+class UserListView(generics.ListAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = UserRegisterSerializer
+
+
 # апи для регистрации
 class UserRegisterView(CreateUserApiView):
     queryset = CustomUser.objects.all()
@@ -121,7 +126,8 @@ class UserVerifyRegisterCode(generics.UpdateAPIView):
         return CheckCode.check_code(code=code)
     
 
-
+class UserProfile():
+    pass
 
 
 

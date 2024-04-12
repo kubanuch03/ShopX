@@ -32,6 +32,7 @@ class Product(models.Model):
         indexes = [
             models.Index(fields=["id", "slug"]),
             models.Index(fields=["name"]),
+            models.Index(fields=["price"]),
             models.Index(fields=["-created"]),
         ]
     def clean(self):
@@ -54,10 +55,9 @@ class Recall(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     text = models.TextField()
-    file = models.FileField(upload_to="recalls/%Y/%m/%d", blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-
+    recall_images = models.ManyToManyField('RecallImages')
     def __str__(self):
         return f'{self.user} {self.product}'
 
@@ -65,6 +65,9 @@ class Recall(models.Model):
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
 
+class RecallImages(models.Model):
+    images = models.ImageField(upload_to='recall_image/%Y/%m/%d/',blank=True,null=True)
+    
 
 class Like(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)

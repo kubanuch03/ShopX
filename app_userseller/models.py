@@ -20,10 +20,12 @@ class SellerProfile(AbstractBaseUser, PermissionsMixin):
     is_seller = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
+    is_official_shop = models.BooleanField(default=False)
 
     image = models.ImageField(upload_to='seller/profiles/')
     category_sc= models.ForeignKey('CategorySC',on_delete=models.CASCADE,blank=True,null=True)
     address = models.CharField(max_length = 50)
+
     location_latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     location_longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
 

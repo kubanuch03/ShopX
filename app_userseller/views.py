@@ -123,18 +123,24 @@ class SellerVerifyRegisterCode(generics.UpdateAPIView):
 
 # # ===== Продавец Seller ====================================================================================================================================================================
 
-# class SellerListApiview(generics.ListAPIView):
-#     queryset = SellerProfile.objects.all()
-#     serializer_class = SellerProfileSerializer
-#     permission_classes = [permissions.IsAuthenticated,]
+class SellerListApiview(generics.ListAPIView):
+    queryset = SellerProfile.objects.all()
+    serializer_class = SellerProfileSerializer
+    permission_classes = [permissions.IsAdminUser,]
 
 
-# class SellerUpdateProfileApi(generics.UpdateAPIView):
-#     queryset = SellerProfile.objects.all()
-#     serializer_class = SellerProfileSerializer
-#     http_method_names = ['patch',]
-#     permission_classes = [permissions.IsAuthenticated,]
-#     lookup_field = 'id'
+class SellerDetailApiview(generics.RetrieveAPIView):
+    queryset = SellerProfile.objects.all()
+    serializer_class = SellerProfileDetailSerializer
+    permission_classes = [permissions.IsAdminUser,]
+
+
+class SellerUpdateProfileShopApi(generics.UpdateAPIView):
+    queryset = SellerProfile.objects.all()
+    serializer_class = SellerProfileSerializer
+    http_method_names = ['patch',]
+    permission_classes = [permissions.IsAuthenticated,]
+    lookup_field = 'pk'
 
 
 # class SellerDetailProfileApi(generics.RetrieveAPIView):

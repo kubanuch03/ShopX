@@ -103,25 +103,51 @@ class SendCodeSerializer(serializers.ModelSerializer):
 #                   'gender',
 #                   ]
         
-# class SellerProfileSerializer(serializers.ModelSerializer):
+class SellerProfileSerializer(serializers.ModelSerializer):
 
-#     class Meta:
-#         model = SellerProfile
-#         fields = [
-#                 #   'number',
-#                   'shop_name',
-#                   'address',
-#                   'location_latitude',
-#                   'location_longitude',
-#                   'email_or_phone',
-#                   'category_sc',
+    class Meta:
+        model = SellerProfile
+        fields = [
+                #   'number',
+                  'shop_name',
+                  'address',
+                  'location_latitude',
+                  'location_longitude',
+                  'email_or_phone',
+                  'category_sc',
+                  'is_official_shop',
+                  'is_active',
+                  'is_seller',
+                  'instagram_link',
+                  'whatsapp_link',
+                  'tiktok_link',
+                  'facebook_link',
+                  ]
+class SellerProfileDetailSerializer(serializers.ModelSerializer):
 
-#                   'instagram_link',
-#                   'whatsapp_link',
-#                   'tiktok_link',
-#                   'facebook_link',
-#                   ]
-        
+    class Meta:
+        model = SellerProfile
+        fields = [
+                  'user',
+                  'username',
+                  'surname',
+                  'email_or_phone',
+
+                  'shop_name',
+                  'is_active',
+                  'is_seller',
+                  'is_official_shop',
+                  'image',
+                  'category_sc',
+                  'address',
+                  'location_latitude',
+                  'location_longitude',
+
+                  'instagram_link',
+                  'whatsapp_link',
+                  'tiktok_link',
+                  'facebook_link',
+                  ]  
 
 
 

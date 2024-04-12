@@ -3,6 +3,10 @@ from .models import CustomUser
 from product.serializers import Product
 from Category.serializers import CategorySerializer, PodCategorySerializer
 
+
+
+
+
 class UserRegisterSerializer(serializers.ModelSerializer):
     password_confirm = serializers.CharField(required=True)
     password = serializers.CharField(required=True,write_only=True)
@@ -81,18 +85,35 @@ class ForgetPasswordSerializer(serializers.Serializer):
         fields = ['password','confirm_password','code']
 
 
+class UserListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ["__all__"]
+
 
 class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['username',
-                  'surname',
-                  'email_or_phone',
-                  'number',
-                  'gender',
+
+        fields = [
+                'id',
+                'username',
+                'surname',
+                'email_or_phone',
+                'image'
                   ]
-  
+
+class UserRecallSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CustomUser
+
+        fields = [
+                'id',
+                'username',
+                'image'
+                  ]
 class LogoutSerializer(serializers.Serializer):
     refresh_token = serializers.CharField()
 
