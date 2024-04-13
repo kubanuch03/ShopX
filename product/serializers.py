@@ -58,11 +58,11 @@ class RecallSerializer(serializers.ModelSerializer):
                         'updated': {'read_only': True, },
                         }
 
-        def to_representation(self, instance):
-            data_recall = super().to_representation(instance) 
-            data_recall['user'] = UserRecallSerializer(instance.user.all(), many=True, context=self.context).data
+    def to_representation(self, instance):
+        data_recall = super().to_representation(instance) 
+        data_recall['user'] = UserRecallSerializer(instance.user.all(), many=True, context=self.context).data
 
-            return data_recall
+        return data_recall
 
 
 class RecallImageSerializer(serializers.ModelSerializer):
