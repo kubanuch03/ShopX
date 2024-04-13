@@ -20,7 +20,7 @@ class Category(models.Model):
 
 class PodCategory(models.Model):
     category = models.ForeignKey(
-        Category, related_name="PodCategory", on_delete=models.CASCADE
+        Category, related_name="pod_categories", on_delete=models.CASCADE
     )
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True)
