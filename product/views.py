@@ -23,8 +23,8 @@ from rest_framework.permissions import AllowAny
 class ProductCreateApiView(CreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [permissions.AllowAny, ]
-
+    permission_classes = [permissions.AllowAny, ]  #!!!!! сделать что бы создавать мог только админ и продавец
+                       
     # def perform_create(self, serializer):
     #     serializer.save(user=self.request.user)
 
@@ -170,6 +170,7 @@ class ReccallImageCreateApiView(generics.CreateAPIView):
     serializer_class = RecallImageSerializer
     permission_classes = [permissions.IsAuthenticated]
 #====== Like   ===========================================================
+
 class LikeView(generics.RetrieveDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer

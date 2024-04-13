@@ -72,7 +72,7 @@ class ForgetPasswordView(generics.UpdateAPIView):
 # ==== User =============================================================================================================================================================
 
 class UserListView(generics.ListAPIView):
-    queryset = CustomUser.objects.all()
+    queryset = CustomUser.objects.filter(is_superuser=False)
     serializer_class = UserRegisterSerializer
 
 
@@ -123,7 +123,9 @@ class UserVerifyRegisterCode(generics.UpdateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         code = serializer.validated_data.get('code')
-        return CheckCode.check_code(code=code)
+        
+
+        return CheckCode.check_code(code=code,)
     
 
 class UserProfile():

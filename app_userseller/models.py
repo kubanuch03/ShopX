@@ -4,15 +4,27 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.models import Group, Permission
 from django.utils.translation import gettext_lazy as _
 from .validators import validate_password_strength
-
+from django.core.validators import RegexValidator
 from .sellermanager import CustomSellerManager
+
+
+
+
 class SellerProfile(AbstractBaseUser, PermissionsMixin):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='seller_profile',blank=True,null=True)
+
+    email_or_phone = models.CharField(max_length= 30,unique = True)
+    email = models.EmailField("Email",unique=True,max_length=255,null=True,blank=True)
+    phone_number = models.CharField(
+        max_length=13,
+        validators=[RegexValidator(r"^\+996\d{9}$")],
+        blank=True,
+        null=True,
+    )
 
     username = models.CharField(max_length= 30, verbose_name="Имя",null=True, blank=True)
     surname = models.CharField(max_length= 30, verbose_name="Фамилия",null=True, blank=True)
     password = models.CharField("password",validators=[validate_password_strength], max_length=128)
-    email_or_phone = models.CharField(max_length= 30,unique = True,null= True, blank=True)
     code = models.CharField(max_length=6, blank=True)
     shop_name = models.CharField(max_length=255,blank=True,null=True)
 

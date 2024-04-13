@@ -84,6 +84,11 @@ class CreateUserApiView(mixins.CreateModelMixin,generics.GenericAPIView):
         email_or_phone = serializer.validated_data['email_or_phone']
         serializer.save()
 
+        
+            
+
+        # Сохраняем пользователя
+
         if "@" in email_or_phone:
             send_verification_code(email_or_phone=email_or_phone)
         else:
@@ -97,12 +102,13 @@ class CheckCode():
     @staticmethod
     def check_code(code):
         
-        user = CustomUser.objects.get(code=code)
+        user = CustomUser.objects.get(code=code,)
         
         
         user.is_active = True
         user.is_usual = True
         user.code = code 
+
         refresh = RefreshToken.for_user(user=user)
         user.auth_token_refresh = refresh
         user.auth_token_access = refresh.access_token
@@ -112,7 +118,8 @@ class CheckCode():
             'detail': 'Successfully confirmed your code',
             'is_usual':user.is_usual,
             'id': user.id,
-            'email': user.email_or_phone,
+            'email': user.email,
+            'phone_number': user.phone_number,
             'refresh': str(refresh),
             'access': str(refresh.access_token),
             'refresh_lifetime_days': refresh.lifetime.days,

@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import SellerProfile
 from product.serializers import Product
 from Category.serializers import CategorySerializer, PodCategorySerializer
+from django.core.exceptions import ValidationError
 
 
     
@@ -20,7 +21,19 @@ class SellerRegisterSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         if attrs['password'] != attrs['password_confirm']:
             raise serializers.ValidationError("Пароли не совпадают")
+    
+        email_or_phone = attrs.get('email_or_phone')
+        if email_or_phone:
+            if '@' in email_or_phone:
+                attrs['email'] = email_or_phone
+            else:
+                try:
+                    phone_number = email_or_phone  # Замените на вашу собственную логику проверки номера телефона
+                    attrs['phone_number'] = phone_number
+                except ValidationError:
+                    raise serializers.ValidationError("Неверный формат номера телефона")
         return attrs
+    
     
 
     def create(self, validated_data):
