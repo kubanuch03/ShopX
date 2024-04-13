@@ -198,7 +198,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-           "hosts": [("localhost", 6379)],
+           "hosts": [("redis", 6379)],
         },
     },
 }
@@ -216,7 +216,7 @@ EMAIL_SERVER = config("EMAIL_SERVER")
 DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
 EMAIL_ADMIN = config("EMAIL_ADMIN")
 
-CELERY_BROKER_URL = f'redis://localhost:6379/0'
+CELERY_BROKER_URL = f'redis://redis:6379/0'
 
 
 CORS_ALLOW_METHODS = [
