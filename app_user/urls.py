@@ -3,7 +3,7 @@ from .views import *
 from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView
 from .doc_user import  register_login, forget_password
 urlpatterns = [
-    path('list-users/', UserListView.as_view(), name='list-user'), # подтвердить почту
+    path('list-users/', UserListView.as_view(), name='list-user'), 
     path('register/', register_login.user_register_view, name='register'), # регистрация
     path('verify-register-code/', UserVerifyRegisterCode.as_view(), name='verify_register_code'), # подтвердить почту
     path('login/', register_login.user_login_view, name='login'), # логин

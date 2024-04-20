@@ -3,7 +3,7 @@ from .models import CustomUser
 from product.serializers import Product
 from Category.serializers import CategorySerializer, PodCategorySerializer
 from django.core.exceptions import ValidationError
-
+import re
 
 
 
@@ -15,22 +15,34 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ['email_or_phone','username','password','password_confirm']
 
+    
+    
     def validate_email_or_phone(self, value):
-        if not value.endswith('@gmail.com'):
-            raise serializers.ValidationError("Only Gmail addresses are allowed.")
-        return value
+        
+    
+        if re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', value):
+            return value
+        
+        elif re.match(r'^\+996\d{9}$', value):   
+            return value
+        
+        else:
+            raise serializers.ValidationError("Invalid email address or phone number.")
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password_confirm']:
             raise serializers.ValidationError("Пароли не совпадают")
+        # if ' ' in attrs['password']:
+        #     raise serializers.ValidationError("Пароль должен состоять без пробелов")
 
         email_or_phone = attrs.get('email_or_phone')
+        
         if email_or_phone:
             if '@' in email_or_phone:
                 attrs['email'] = email_or_phone
             else:
                 try:
-                    phone_number = email_or_phone  # Замените на вашу собственную логику проверки номера телефона
+                    phone_number = email_or_phone  
                     attrs['phone_number'] = phone_number
                 except ValidationError:
                     raise serializers.ValidationError("Неверный формат номера телефона")

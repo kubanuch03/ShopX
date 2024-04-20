@@ -61,15 +61,26 @@ def send_code_to_number(email_or_phone):
         </phones>
     </message>"""
 
-
     url = 'https://smspro.nikita.kg/api/message'
     headers = {'Content-Type': 'application/xml'}
 
     response = requests.post(url, data=xml_data, headers=headers)
-    user_obj = CustomUser.objects.get(email_or_phone=email_or_phone)
-    user_obj.code = code
-    print(user_obj.number)
-    user_obj.save()
+    
+    # Предполагая, что email_or_phone является уникальным идентификатором пользователя,
+    # необходимо определить логику поиска пользователя в базе данных
+    try:
+        user_obj = CustomUser.objects.get(email=email_or_phone)
+    except CustomUser.DoesNotExist:
+        # Обработка случая, когда пользователя с указанным email нет в базе данных
+        user_obj = None
+    
+    if user_obj:
+        user_obj.code = code
+        user_obj.save()
+        print(f"Код сохранен для пользователя с email: {email_or_phone}")
+    else:
+        print("Пользователь с указанным email не найден.")
+    
     if response.status_code == 200:
         print('Ответ сервера:', response.text)
 
@@ -87,8 +98,7 @@ class CreateUserApiView(mixins.CreateModelMixin,generics.GenericAPIView):
         
             
 
-        # Сохраняем пользователя
-
+        
         if "@" in email_or_phone:
             send_verification_code(email_or_phone=email_or_phone)
         else:
@@ -186,7 +196,7 @@ class ChangePassword:
             if "@" in email_or_phone:
                 send_verification_code(email_or_phone=email_or_phone)
                 return Response({"success":"Код был отправлен на ваш email"})
-            elif "996" in email_or_phone:
+            elif "+996" in email_or_phone:
                 send_code_to_number(email_or_phone=int(email_or_phone))
                 return Response({"success":"Код был отправлен на ваш номер"})
             else:
