@@ -3,7 +3,7 @@ from .models import SellerProfile
 from product.serializers import Product
 from Category.serializers import CategorySerializer, PodCategorySerializer
 from django.core.exceptions import ValidationError
-
+from .validators import validate_password_strength
 
     
     
@@ -21,7 +21,10 @@ class SellerRegisterSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         if attrs['password'] != attrs['password_confirm']:
             raise serializers.ValidationError("Пароли не совпадают")
-
+        
+        
+        
+        
         email_or_phone = attrs.get('email_or_phone')
         if email_or_phone:
             if '@' in email_or_phone:
@@ -32,6 +35,8 @@ class SellerRegisterSerializer(serializers.ModelSerializer):
                     attrs['phone_number'] = phone_number
                 except ValidationError:
                     raise serializers.ValidationError("Неверный формат номера телефона")
+        password = attrs.get('password')
+        validate_password_strength(password) 
         return attrs
     
     
@@ -70,7 +75,7 @@ class LoginSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         email_or_phone = attrs.get('email_or_phone')
         password = attrs.get('password')
-        print(password, '/*/*/*/*/*/*/*')
+
         if not email_or_phone or not password:
             raise serializers.ValidationError("Both email/phone and password are required")
 
