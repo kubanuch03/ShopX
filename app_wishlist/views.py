@@ -13,8 +13,8 @@ from product.models import Product
 class WishlistModelViewSet(viewsets.ModelViewSet):
 	queryset = WishlistItem.objects.all()
 	serializer_class = WishlistItemSerializer
-	# permission_classes = [IsAuthenticated]
-	permission_classes = [AllowAny,]
+	permission_classes = [IsAuthenticated]
+	# permission_classes = [AllowAny,]
 
 	@action(detail=False, methods=["post"])
 	def add_wishlist(self, request, *args, **kwargs):
@@ -36,7 +36,6 @@ class WishlistModelViewSet(viewsets.ModelViewSet):
 		print('---------------------=-=-==-----------------------')
 		serializer = self.get_serializer(queryset, many=True)
 		return Response(serializer.data)
-		pass
 '''
  # path('add-wishlist',views.add_wishlist, name='add_wishlist'),
         # path('my-wishlist',views.my_wishlist, name='my_wishlist'),
