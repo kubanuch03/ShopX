@@ -6,6 +6,7 @@ from .services import *
 from .serializers import *
 from .models import CustomUser as User
 from django.db.models import Q
+from rest_framework.views import APIView
 
 # #===================================================================================================================================================================================
 # class LogoutView(APIView):
@@ -169,7 +170,19 @@ class SellerDetailApiview(generics.RetrieveAPIView):
 
 
 
+#LOGOUT
 
+
+class LogoutView(APIView):
+    def post(self, request):
+        try:
+            refresh_token = request.data['refresh_token']
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+
+            return Response({'detail': 'Successfully logged out.'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'detail': 'Error logging out.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 

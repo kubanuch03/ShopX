@@ -28,6 +28,8 @@ urlpatterns = [
 #     path('seller-profile/<int:id>/', DetailUserProfileApi.as_view(), name=''),
     path('seller/profile/update/<int:pk>/', SellerUpdateProfileShopApi.as_view(), name='seller-profile-update'),
 
+    path('logout/seller/', LogoutView.as_view(), name='user logout'),
+
 #     path('market/', MarketListAPIView.as_view(), name=''),
 #     path('logout/', LogoutView.as_view(), name='logout'),
     

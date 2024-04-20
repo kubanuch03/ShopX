@@ -61,15 +61,26 @@ def send_code_to_number(email_or_phone):
         </phones>
     </message>"""
 
-
     url = 'https://smspro.nikita.kg/api/message'
     headers = {'Content-Type': 'application/xml'}
 
     response = requests.post(url, data=xml_data, headers=headers)
-    user_obj = CustomUser.objects.get(email_or_phone=email_or_phone)
-    user_obj.code = code
-    print(user_obj.number)
-    user_obj.save()
+    
+    # Предполагая, что email_or_phone является уникальным идентификатором пользователя,
+    # необходимо определить логику поиска пользователя в базе данных
+    try:
+        user_obj = CustomUser.objects.get(email=email_or_phone)
+    except CustomUser.DoesNotExist:
+        # Обработка случая, когда пользователя с указанным email нет в базе данных
+        user_obj = None
+    
+    if user_obj:
+        user_obj.code = code
+        user_obj.save()
+        print(f"Код сохранен для пользователя с email: {email_or_phone}")
+    else:
+        print("Пользователь с указанным email не найден.")
+    
     if response.status_code == 200:
         print('Ответ сервера:', response.text)
 
@@ -81,20 +92,20 @@ class CreateUserApiView(mixins.CreateModelMixin,generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        email_or_phone = serializer.validated_data['email_or_phone']
-        serializer.save()
+        # Сохраняем пользователя и получаем объект пользователя
+        user = serializer.save()
 
-        
-            
+        email_or_phone = serializer.validated_data.get('email_or_phone')
 
-        # Сохраняем пользователя
+        if email_or_phone:
+            if "@" in email_or_phone:
+                serializer.validated_data['email'] = email_or_phone
+                send_verification_code(email_or_phone=email_or_phone)
+            else:
+                serializer.validated_data['phone_number'] = email_or_phone
+                send_code_to_number(email_or_phone=int(email_or_phone))
 
-        if "@" in email_or_phone:
-            send_verification_code(email_or_phone=email_or_phone)
-        else:
-            send_code_to_number(email_or_phone=int(email_or_phone))
-
-        return Response({"success":"Код был отправлен на указанный реквизит"}, status=status.HTTP_201_CREATED)
+        return Response({"success": "Код был отправлен на указанный реквизит"}, status=status.HTTP_201_CREATED)
 
 
 
@@ -186,7 +197,7 @@ class ChangePassword:
             if "@" in email_or_phone:
                 send_verification_code(email_or_phone=email_or_phone)
                 return Response({"success":"Код был отправлен на ваш email"})
-            elif "996" in email_or_phone:
+            elif "+996" in email_or_phone:
                 send_code_to_number(email_or_phone=int(email_or_phone))
                 return Response({"success":"Код был отправлен на ваш номер"})
             else:

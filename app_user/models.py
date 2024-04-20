@@ -27,7 +27,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
     is_usual = models.BooleanField(default=False)
-    image = models.ImageField(upload_to='usual/profiles/')
+    image = models.ImageField(upload_to='usual/profiles/', blank=True, null=True)
     # number = models.CharField(max_length= 30,unique=True,null= True, blank=True)
     device_token = models.CharField(max_length = 100, verbose_name = 'токен от ios/android')
 
