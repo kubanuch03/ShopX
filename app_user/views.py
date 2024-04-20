@@ -73,8 +73,8 @@ class ForgetPasswordView(generics.UpdateAPIView):
 
 class UserListView(generics.ListAPIView):
     queryset = CustomUser.objects.filter(is_superuser=False)
-    serializer_class = UserRegisterSerializer
-
+    # serializer_class = UserRegisterSerializer
+    serializer_class = UserListSerializer
 
 # апи для регистрации
 class UserRegisterView(CreateUserApiView):

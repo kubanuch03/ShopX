@@ -23,6 +23,10 @@ class ProductSerializer(serializers.ModelSerializer):
         if discount is not None:
             discounted_price = self.apply_discount_to_price(price, discount)
             validated_data['price'] = discounted_price
+
+            user = self.context['request'].user     # + kylych
+            validated_data['user'] = user  # + kylych
+
         return super().create(validated_data)
 
     def get_mid_ocenka(self, instance):
@@ -43,10 +47,25 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = (
-            'id', 'category', 'podcategory', 'user', 'name', 'slug', 'image1','image2','image3','image4', 'description', 'price', 'location', 'rating',
-            'available', 'created', 'updated', 'likes', 'discount','mid_ocenka','count_recall'
+            'id',
+            'category',
+            'podcategory',
+            'user',
+            'name',
+            'slug',
+            'image1', 'image2', 'image3', 'image4',
+            'description',
+            'price',
+            'location',
+            'rating',
+            'available',
+            'created', 'updated',
+            'likes',
+            'discount',
+            'mid_ocenka',
+            'count_recall'
         )
-        read_only_fields = ('id', 'slug', 'created', 'updated','mid_ocenka',)
+        read_only_fields = ('id', 'slug', 'created', 'updated', 'mid_ocenka',)
 
 
 class RecallSerializer(serializers.ModelSerializer):
