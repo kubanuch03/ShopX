@@ -111,7 +111,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 LANGUAGE_CODE = "en-us"
-TIME_ZONE = "UTC"
+# TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Bishkek"
 USE_I18N = True
 USE_TZ = True
 
@@ -130,6 +131,7 @@ AUTH_USER_MODEL = 'app_user.CustomUser'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # "rest_framework.authentication.SessionAuthentication",
     ),
     # 'DEFAULT_SCHEMA_CLASS': 'drf_yasg.openapi.AutoSchema',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',

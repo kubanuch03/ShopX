@@ -83,6 +83,8 @@ class SellerLoginView(generics.CreateAPIView):
     serializer_class = LoginSerializer
 
     def post(self, request, *args, **kwargs):
+
+
         email_or_phone = request.data.get('email_or_phone')
         password = request.data.get('password')
         print(password, '/*/*/*/*/*/*/*')
