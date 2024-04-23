@@ -146,7 +146,7 @@ class SellerProfileDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = SellerProfile
         fields = [
-                  'user',
+                #   'user',
                   'username',
                   'surname',
                   'email_or_phone',

@@ -10,14 +10,14 @@ from product. serializers import ProductSerializer
 class VipCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vip
-        fields = ["product"]
+        fields = ['id',"product"]
 
 
 class VipListSerializer(serializers.ModelSerializer):
     products = serializers.SerializerMethodField()
     class Meta:
         model = Vip
-        fields = ["products"]
+        fields = ['id',"products"]
 
     def get_products(self, obj):
         products_queryset = obj.product.all()

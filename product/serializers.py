@@ -1,6 +1,55 @@
 from rest_framework import serializers
-from .models import Product, Recall, RecallImages
+from .models import Product, Recall, RecallImages, Size
 from app_user.serializers import UserProfileSerializer, UserRecallSerializer
+
+
+
+
+class SizeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Size
+        fields = ['id','sizes']
+
+
+
+class ProductDetailSerializer(serializers.ModelSerializer):
+    location = serializers.CharField(read_only=True)
+    rating = serializers.DecimalField(max_digits=3, decimal_places=2, read_only=True)
+    likes = serializers.IntegerField(read_only=True)
+    discount = serializers.IntegerField(required=False)
+    mid_ocenka = serializers.SerializerMethodField() 
+    count_recall = serializers.SerializerMethodField() 
+    size = SizeSerializer(many=True)
+
+    class Meta:
+        model = Product
+        fields = (
+            'id', 'category', 'podcategory', 'user','size', 'name', 'slug', 'image1','image2','image3','image4', 'description', 'price', 'location', 'rating',
+            'available', 'created', 'updated', 'likes', 'discount','mid_ocenka','count_recall'
+        )
+        read_only_fields = ('id', 'slug', 'created', 'updated','mid_ocenka',)
+
+    # def to_representation(self, instance):
+    #     data_product = super().to_representation(instance)        
+    #     data_product['size'] = SizeSerializer(instance.size.all(),many=True).data
+        
+    #     return data_product   
+
+    def get_mid_ocenka(self, instance):
+        # Вычисляем среднюю оценку товара
+        recalls = instance.recall_set.all()
+        if recalls.exists():
+            total_rating = sum(recall.rating for recall in recalls)
+            mid_ocenka = total_rating / recalls.count()
+            return mid_ocenka
+        else:
+            return None
+
+    def get_count_recall(self,instance):
+        recalls = instance.recall_set.all()
+        count_recall = recalls.count()
+        return count_recall
+
 
 class ProductSerializer(serializers.ModelSerializer):
     location = serializers.CharField(read_only=True)
@@ -9,6 +58,16 @@ class ProductSerializer(serializers.ModelSerializer):
     discount = serializers.IntegerField(required=False)
     mid_ocenka = serializers.SerializerMethodField() 
     count_recall = serializers.SerializerMethodField() 
+
+    class Meta:
+        model = Product
+        fields = (
+            'id', 'category', 'podcategory', 'user','size', 'name', 'slug', 'image1','image2','image3','image4', 'description', 'price', 'location', 'rating',
+            'available', 'created', 'updated', 'likes', 'discount','mid_ocenka','count_recall'
+        )
+        read_only_fields = ('id', 'slug', 'created', 'updated','mid_ocenka',)
+
+    
 
     def apply_discount_to_price(self, price, discount):
         if discount > 0 and discount <= 100:
@@ -40,13 +99,7 @@ class ProductSerializer(serializers.ModelSerializer):
         count_recall = recalls.count()
         return count_recall
     
-    class Meta:
-        model = Product
-        fields = (
-            'id', 'category', 'podcategory', 'user', 'name', 'slug', 'image1','image2','image3','image4', 'description', 'price', 'location', 'rating',
-            'available', 'created', 'updated', 'likes', 'discount','mid_ocenka','count_recall'
-        )
-        read_only_fields = ('id', 'slug', 'created', 'updated','mid_ocenka',)
+    
 
 
 class RecallSerializer(serializers.ModelSerializer):
@@ -69,3 +122,4 @@ class RecallImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecallImages
         fields = ['id','images']
+

@@ -7,8 +7,8 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from django.db.models import Avg, Count, Q
 from django_filters.rest_framework import DjangoFilterBackend
 
-from .serializers import ProductSerializer, RecallSerializer, RecallImageSerializer
-from .models import Product, Recall, RecallImages ,Like
+from .serializers import *
+from .models import Product, Recall, RecallImages ,Like, Size
 from .filters import CustomFilter
 from datetime import datetime
 from rest_framework import permissions
@@ -31,7 +31,7 @@ class ProductCreateApiView(CreateAPIView):
 
 class ProductListApiView(ListAPIView):
     queryset = Product.objects.all().annotate(rating=Avg("recall__rating"), likes=Count('like'))
-    serializer_class = ProductSerializer
+    serializer_class = ProductDetailSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = CustomFilter
     search_fields = ["name", "description"]
@@ -88,7 +88,7 @@ class ProductListApiView(ListAPIView):
 # Представление для получения деталей, обновления и удаления продукта
 class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all().annotate(rating=Avg("recall__rating"), likes=Count('like'))
-    serializer_class = ProductSerializer
+    serializer_class = ProductDetailSerializer
     # permission_classes = [IsSeller, ]
 
     def perform_update(self, serializer):
@@ -193,3 +193,30 @@ class LikeView(generics.RetrieveDestroyAPIView):
             return Response({"succes":"Like is deleted"})
         else:
             return Response({"success":"No Like"})
+        
+
+#====== Size   ===========================================================
+
+class SizeListApiView(generics.ListAPIView):
+    queryset = Size.objects.all()
+    serializer_class = SizeSerializer
+
+
+class SizeDetailApiView(generics.RetrieveAPIView):
+    queryset = Size.objects.all()
+    serializer_class = SizeSerializer
+    
+
+class SizeCreateApiView(generics.ListCreateAPIView):
+    queryset = Size.objects.all()
+    serializer_class = SizeSerializer
+
+
+class SizeRUDApiView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Size.objects.all()
+    serializer_class = SizeSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+
+
+

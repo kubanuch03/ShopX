@@ -8,10 +8,17 @@ from django.core.exceptions import ValidationError
 
 
 class Size(models.Model):
-    title = models.CharField(max_length=255)
+    sizes = models.CharField(max_length=255, unique=True)
 
-    def __str__(self) -> str:
-        return self.title
+    def __str__(self):
+        return self.sizes
+    
+    class Meta:
+        indexes = [
+            models.Index(fields=['id']),  
+            models.Index(fields=['sizes']),  
+            
+        ]
 
 class Product(models.Model):
     category = models.ForeignKey(
