@@ -7,8 +7,8 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from django.db.models import Avg, Count, Q
 from django_filters.rest_framework import DjangoFilterBackend
 
-from .serializers import ProductSerializer, RecallSerializer
-from .models import Product, Recall, Like
+from .serializers import ProductSerializer, RecallSerializer, RecallImageSerializer
+from .models import Product, Recall, RecallImages ,Like
 from .filters import CustomFilter
 from datetime import datetime
 from rest_framework import permissions
@@ -23,8 +23,8 @@ from rest_framework.permissions import AllowAny
 class ProductCreateApiView(CreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [permissions.AllowAny, ]
-
+    permission_classes = [permissions.AllowAny, ]  #!!!!! сделать что бы создавать мог только админ и продавец
+                       
     # def perform_create(self, serializer):
     #     serializer.save(user=self.request.user)
 
@@ -40,6 +40,32 @@ class ProductListApiView(ListAPIView):
     def HistorySearch(self):
         pass
 
+    def get_queryset(self):
+        # Пытаемся получить результат из кеша
+        cached_queryset = cache.get('cached_product_queryset')
+        if cached_queryset is not None:
+            return cached_queryset
+
+        # Если результат не найден в кеше, выполняем запрос к базе данных
+        queryset = self._get_queryset_from_database()
+
+        # Кешируем результат на 1 час
+        cache.set('cached_product_queryset', queryset, timeout=3600)
+
+        return queryset
+
+    def _get_queryset_from_database(self):
+        # Получаем список товаров с аннотацией средней оценки и количества отзывов
+        queryset = Product.objects.annotate(
+            average_rating=Avg('recall__rating'),
+            num_reviews=Count('recall')
+        )
+        queryset = queryset.order_by('-average_rating')
+
+        # Дополнительно сортируем товары по количеству отзывов (от большего к меньшему)
+        queryset = queryset.order_by('-num_reviews')
+
+        return queryset
     # @action(
     #     methods=['get'],
     #     detail=False,
@@ -72,6 +98,7 @@ class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 # Представление для получения деталей, обновления и удаления продукта
+#====== Recall   ===========================================================
 
 class RecallListApiView(ListAPIView):
     serializer_class = RecallSerializer
@@ -82,8 +109,7 @@ class RecallListApiView(ListAPIView):
             queryset = Recall.objects.filter(product=pk)
             return queryset
         else:
-            # Обработка случая, когда pk отсутствует в запросе
-            # Например, возвращаем пустой queryset
+            
             return Recall.objects.none()
 
 
@@ -102,11 +128,16 @@ class RecallViewSet(GenericViewSet):
         text = serializer.validated_data['text']    
         print(request.user)
         
+        product.rating = product.recall_set.aggregate(Avg('rating'))['rating__avg']
+        product.num_reviews = product.recall_set.count()
+        product.save()
+
+
         title = f"Отзыв от {request.user.username} {datetime.utcnow()}\n{rating}\n{text}"
         
         whom = product.user.device_token
         
-        send_push_notification_recall.delay(title, whom)
+        # send_push_notification_recall.delay(title, whom)
         
         return Response({'success':'Отзыв был отправлен продавцу'})
     
@@ -133,6 +164,12 @@ class RecallViewSet(GenericViewSet):
             instance.delete()
             return Response({'success':'Recall is deleted'})
 
+
+class ReccallImageCreateApiView(generics.CreateAPIView):
+    queryset = RecallImages.objects.all()
+    serializer_class = RecallImageSerializer
+    permission_classes = [permissions.IsAuthenticated]
+#====== Like   ===========================================================
 
 class LikeView(generics.RetrieveDestroyAPIView):
     queryset = Product.objects.all()

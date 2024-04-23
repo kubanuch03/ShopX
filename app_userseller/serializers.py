@@ -2,7 +2,8 @@ from rest_framework import serializers
 from .models import SellerProfile
 from product.serializers import Product
 from Category.serializers import CategorySerializer, PodCategorySerializer
-
+from django.core.exceptions import ValidationError
+from .validators import validate_password_strength
 
     
     
@@ -11,7 +12,7 @@ class SellerRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(required=True,write_only=True)
     password_confirm = serializers.CharField(required=True,write_only=True)
     shop_name= serializers.CharField(required=False)
-
+    
     class Meta:
         model = SellerProfile
         fields = ['email_or_phone','password','password_confirm','shop_name','location_latitude',
@@ -20,7 +21,24 @@ class SellerRegisterSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         if attrs['password'] != attrs['password_confirm']:
             raise serializers.ValidationError("Пароли не совпадают")
+        
+        
+        
+        
+        email_or_phone = attrs.get('email_or_phone')
+        if email_or_phone:
+            if '@' in email_or_phone:
+                attrs['email'] = email_or_phone
+            else:
+                try:
+                    phone_number = email_or_phone  # Замените на вашу собственную логику проверки номера телефона
+                    attrs['phone_number'] = phone_number
+                except ValidationError:
+                    raise serializers.ValidationError("Неверный формат номера телефона")
+        password = attrs.get('password')
+        validate_password_strength(password) 
         return attrs
+    
     
 
     def create(self, validated_data):
@@ -40,6 +58,7 @@ class BecomeSellerSerializer(serializers.Serializer):
 class VerifyCodeSerializer(serializers.ModelSerializer):
     
     class Meta:
+        ref_name = "SellerVerify" 
         model = SellerProfile
         fields = ['code']
 
@@ -76,6 +95,7 @@ class LoginSerializer(serializers.ModelSerializer):
 class SendCodeSerializer(serializers.ModelSerializer):
     
     class Meta:
+        ref_name = "SellerCode" 
         model = SellerProfile
         fields = ['email_or_phone']
 
@@ -101,25 +121,51 @@ class SendCodeSerializer(serializers.ModelSerializer):
 #                   'gender',
 #                   ]
         
-# class SellerProfileSerializer(serializers.ModelSerializer):
+class SellerProfileSerializer(serializers.ModelSerializer):
 
-#     class Meta:
-#         model = SellerProfile
-#         fields = [
-#                 #   'number',
-#                   'shop_name',
-#                   'address',
-#                   'location_latitude',
-#                   'location_longitude',
-#                   'email_or_phone',
-#                   'category_sc',
+    class Meta:
+        model = SellerProfile
+        fields = [
+                #   'number',
+                  'shop_name',
+                  'address',
+                  'location_latitude',
+                  'location_longitude',
+                  'email_or_phone',
+                  'category_sc',
+                  'is_official_shop',
+                  'is_active',
+                  'is_seller',
+                  'instagram_link',
+                  'whatsapp_link',
+                  'tiktok_link',
+                  'facebook_link',
+                  ]
+class SellerProfileDetailSerializer(serializers.ModelSerializer):
 
-#                   'instagram_link',
-#                   'whatsapp_link',
-#                   'tiktok_link',
-#                   'facebook_link',
-#                   ]
-        
+    class Meta:
+        model = SellerProfile
+        fields = [
+                  'user',
+                  'username',
+                  'surname',
+                  'email_or_phone',
+
+                  'shop_name',
+                  'is_active',
+                  'is_seller',
+                  'is_official_shop',
+                  'image',
+                  'category_sc',
+                  'address',
+                  'location_latitude',
+                  'location_longitude',
+
+                  'instagram_link',
+                  'whatsapp_link',
+                  'tiktok_link',
+                  'facebook_link',
+                  ]  
 
 
 

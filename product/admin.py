@@ -1,8 +1,8 @@
 from django.contrib import admin
-from .models import Product, Recall
+from .models import Product, Recall, RecallImages
 
 
-admin.site.register(Recall)
+
 
 
 class PriceFilter(admin.SimpleListFilter):
@@ -30,9 +30,18 @@ class PriceFilter(admin.SimpleListFilter):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ["id","name", "slug", "price", "available", "created", "updated"]
+    list_display = ["id","name", "slug", "price", "available", "created", "updated",]
     list_filter = ["available", "created", "updated", PriceFilter]
     list_editable = ["price", "available"]
     prepopulated_fields = {"slug": ("name",)}
     search_fields = ["name"]
 
+
+
+@admin.register(Recall)
+class RecallAdmin(admin.ModelAdmin):
+    list_display = ["id","user", "product", "rating", "created",]
+
+@admin.register(RecallImages)
+class RecallImagesAdmin(admin.ModelAdmin):
+    list_display = ["id","images",]

@@ -81,15 +81,20 @@ class CreateUserApiView(mixins.CreateModelMixin,generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        email_or_phone = serializer.validated_data['email_or_phone']
-        serializer.save()
+        # Сохраняем пользователя и получаем объект пользователя
+        user = serializer.save()
 
-        if "@" in email_or_phone:
-            send_verification_code(email_or_phone=email_or_phone)
-        else:
-            send_code_to_number(email_or_phone=int(email_or_phone))
+        email_or_phone = serializer.validated_data.get('email_or_phone')
 
-        return Response({"success":"Код был отправлен на указанный реквизит"}, status=status.HTTP_201_CREATED)
+        if email_or_phone:
+            if "@" in email_or_phone:
+                serializer.validated_data['email'] = email_or_phone
+                send_verification_code(email_or_phone=email_or_phone)
+            else:
+                serializer.validated_data['phone_number'] = email_or_phone
+                send_code_to_number(email_or_phone=int(email_or_phone))
+
+        return Response({"success": "Код был отправлен на указанный реквизит"}, status=status.HTTP_201_CREATED)
 
 
 

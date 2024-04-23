@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
-
+from rest_framework import generics
 from .services import *
 from .serializers import *
 from .models import CustomUser as User
@@ -12,24 +12,23 @@ from drf_yasg.utils import swagger_auto_schema
 from django.contrib.auth import logout
 from django.core.cache import cache
 
-
+from drf_spectacular.utils import extend_schema_view, extend_schema
 
 #===================================================================================================================================================================================
+
 class LogoutView(APIView):
     def post(self, request):
         try:
-            token = request.headers.get('Authorization').split(' ')[1]
-            if cache.get(token):
+            refresh_token = request.data['refresh_token']
+            token = RefreshToken(refresh_token)
+            token.blacklist()
 
-                
-                return Response({"error": "Токен уже недействителен."}, status=status.HTTP_400_BAD_REQUEST)
-            cache.set(token, True, timeout=None)  # Устанавливаем токен в кэш без срока действия
-            return Response({"message": "Вы успешно вышли из системы."}, status=status.HTTP_200_OK)
-        except AttributeError:
-            return Response({"error": "Отсутствует заголовок Authorization."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'Successfully logged out.'}, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response({'detail': 'Error logging out.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
 
 #отправить код на почту       
 class ForgetPasswordSendCodeView(generics.UpdateAPIView):
@@ -70,6 +69,11 @@ class ForgetPasswordView(generics.UpdateAPIView):
 
 
 # ==== User =============================================================================================================================================================
+
+class UserListView(generics.ListAPIView):
+    queryset = CustomUser.objects.filter(is_superuser=False)
+    serializer_class = UserRegisterSerializer
+
 
 # апи для регистрации
 class UserRegisterView(CreateUserApiView):
@@ -118,11 +122,28 @@ class UserVerifyRegisterCode(generics.UpdateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         code = serializer.validated_data.get('code')
-        return CheckCode.check_code(code=code)
+        
+
+        return CheckCode.check_code(code=code,)
     
 
 
+class UserInfoApiView(APIView):
+    def get(self, request, *args, **kwargs):
+        user = self.request.user
+        queryset = CustomUser.objects.filter(id=user.id).first()
+        serializer = UserProfileSerializer(queryset)
+        return Response(serializer.data)
+    
 
+
+class UserUpdateApiView(generics.RetrieveUpdateAPIView):
+    queryset = CustomUser.objects.all() 
+    serializer_class = UserProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
 
 
 
