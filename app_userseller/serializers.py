@@ -12,7 +12,7 @@ class SellerRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(required=True,write_only=True)
     password_confirm = serializers.CharField(required=True,write_only=True)
     shop_name= serializers.CharField(required=False)
-
+    
     class Meta:
         model = SellerProfile
         fields = ['email_or_phone','password','password_confirm','shop_name','location_latitude',
