@@ -63,7 +63,6 @@ INSTALLED_APPS = [
     "app_user",
     "app_userseller",
     "app_baner",
-    "app_recommendations",
 ]
 
 

@@ -13,8 +13,11 @@ urlpatterns = [
 
     # path('update/product/<int:id>/', ProductUpdateApiView.as_view()),
 
+    path('recall/list/<int:pk>/', RecallListApiView.as_view(), name='recall-list'),
+    path('recall/image/create/', ReccallImageCreateApiView.as_view(), name='recall-image-create'),
+
     path("like/<int:pk>/", LikeView.as_view(), name="like"),
-    path('recall-list/<int:pk>/', RecallListApiView.as_view(), name='recall-list'),
+
     path('', include(router.urls)),
     # path('viewed-products/', ViewedProductListCreate.as_view(), name='viewed-product-list'),
 ]

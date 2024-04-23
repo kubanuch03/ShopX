@@ -6,7 +6,8 @@ def validate_password_strength(value):
         '1234567', '1234567890', '123123', 'abc123', 'qwerty', 
         'monkey', 'letmein', 'trustno1', 'dragon', 'baseball'
     ]
-    
+    if ' ' in value:
+        raise ValidationError("Пароль не должен содержать пробелы")
     # Проверка длины пароля
     if len(value) < 8:
         raise ValidationError(
