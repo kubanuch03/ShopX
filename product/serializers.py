@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Product, Recall, RecallImages, Size
 from app_user.serializers import UserProfileSerializer, UserRecallSerializer
-
+from app_vip.models import Vip
 
 
 
@@ -19,21 +19,21 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     discount = serializers.IntegerField(required=False)
     mid_ocenka = serializers.SerializerMethodField() 
     count_recall = serializers.SerializerMethodField() 
-    size = SizeSerializer(many=True)
+    icon_vip = serializers.SerializerMethodField() 
 
     class Meta:
         model = Product
         fields = (
             'id', 'category', 'podcategory', 'user','size', 'name', 'slug', 'image1','image2','image3','image4', 'description', 'price', 'location', 'rating',
-            'available', 'created', 'updated', 'likes', 'discount','mid_ocenka','count_recall'
+            'available', 'created', 'updated', 'likes', 'discount','mid_ocenka','count_recall','icon_vip'
         )
         read_only_fields = ('id', 'slug', 'created', 'updated','mid_ocenka',)
 
-    # def to_representation(self, instance):
-    #     data_product = super().to_representation(instance)        
-    #     data_product['size'] = SizeSerializer(instance.size.all(),many=True).data
-        
-    #     return data_product   
+    def get_icon_vip(self, obj):
+        if Vip.objects.filter(product=obj).exists():
+            return Vip.objects.get(product=obj).icon.url
+        else:
+            return None
 
     def get_mid_ocenka(self, instance):
         # Вычисляем среднюю оценку товара

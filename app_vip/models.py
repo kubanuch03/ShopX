@@ -11,9 +11,10 @@ class Vip(models.Model):
     created_at = models.DateField(auto_now=True)
 
     def __str__(self):
-        return f'{self.product}'
+        return f'{self.id}'
     
     class Meta:
         indexes = [
             models.Index(fields=['id'])
         ]
+
