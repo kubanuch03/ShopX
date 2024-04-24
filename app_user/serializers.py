@@ -8,6 +8,7 @@ import re
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
+    email_or_phone = serializers.EmailField(required=True)
     password_confirm = serializers.CharField(required=True)
     password = serializers.CharField(required=True,write_only=True)
     username = serializers.CharField(required=True)
