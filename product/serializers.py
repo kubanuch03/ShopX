@@ -58,12 +58,14 @@ class ProductSerializer(serializers.ModelSerializer):
     discount = serializers.IntegerField(required=False)
     mid_ocenka = serializers.SerializerMethodField() 
     count_recall = serializers.SerializerMethodField() 
+    discounted_price = serializers.IntegerField(required=False) 
+
 
     class Meta:
         model = Product
         fields = (
             'id', 'category', 'podcategory', 'user','size', 'name', 'slug', 'image1','image2','image3','image4', 'description', 'price', 'location', 'rating',
-            'available', 'created', 'updated', 'likes', 'discount','mid_ocenka','count_recall'
+            'available', 'created', 'updated', 'likes', 'discount','mid_ocenka','count_recall','discounted_price'
         )
         read_only_fields = ('id', 'slug', 'created', 'updated','mid_ocenka',)
 
@@ -77,12 +79,17 @@ class ProductSerializer(serializers.ModelSerializer):
             return price
 
     def create(self, validated_data):
-        discount = validated_data.get('discount')
         price = validated_data['price']
+        discount = validated_data['discount']
+        if price <= 0 or discount <=0:
+            raise serializers.ValidationError({"price or discount": "Price or Discount must be a positive integer."})
+        
         if discount is not None:
             discounted_price = self.apply_discount_to_price(price, discount)
-            validated_data['price'] = discounted_price
+            validated_data['discounted_price'] = discounted_price
         return super().create(validated_data)
+
+
 
     def get_mid_ocenka(self, instance):
         # Вычисляем среднюю оценку товара

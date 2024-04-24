@@ -32,6 +32,7 @@ class Product(models.Model):
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     discount = models.PositiveIntegerField(blank=True, null=True)
+    discounted_price = models.PositiveBigIntegerField(blank=True,null=True)
     size = models.ManyToManyField(Size)
     slug = models.SlugField(max_length=200)
     image1 = models.ImageField(upload_to="products/%Y/%m/%d", blank=True, null=True)
