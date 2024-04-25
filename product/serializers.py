@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product, Recall, RecallImages
+from .models import Product, Recall, RecallImages, Size
 from app_user.serializers import UserProfileSerializer, UserRecallSerializer
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -8,7 +8,11 @@ class ProductSerializer(serializers.ModelSerializer):
     likes = serializers.IntegerField(read_only=True)
     discount = serializers.IntegerField(required=False)
     mid_ocenka = serializers.SerializerMethodField() 
-    count_recall = serializers.SerializerMethodField() 
+    count_recall = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Product
+        fields = '__all__'
 
     def apply_discount_to_price(self, price, discount):
         if discount > 0 and discount <= 100:
@@ -44,6 +48,7 @@ class ProductSerializer(serializers.ModelSerializer):
         recalls = instance.recall_set.all()
         count_recall = recalls.count()
         return count_recall
+
     
 
 
@@ -69,3 +74,8 @@ class RecallImageSerializer(serializers.ModelSerializer):
         model = RecallImages
         fields = ['id','images']
 
+
+class SizeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Size
+        fields = ['id', 'sizes']

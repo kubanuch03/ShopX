@@ -31,7 +31,7 @@ class ProductCreateApiView(CreateAPIView):
 
 class ProductListApiView(ListAPIView):
     queryset = Product.objects.all().annotate(rating=Avg("recall__rating"), likes=Count('like'))
-    serializer_class = ProductDetailSerializer
+    serializer_class = ProductSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = CustomFilter
     search_fields = ["name", "description"]
@@ -88,7 +88,7 @@ class ProductListApiView(ListAPIView):
 # Представление для получения деталей, обновления и удаления продукта
 class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all().annotate(rating=Avg("recall__rating"), likes=Count('like'))
-    serializer_class = ProductDetailSerializer
+    serializer_class = ProductSerializer
     # permission_classes = [IsSeller, ]
 
     def perform_update(self, serializer):
@@ -205,7 +205,7 @@ class SizeListApiView(generics.ListAPIView):
 class SizeDetailApiView(generics.RetrieveAPIView):
     queryset = Size.objects.all()
     serializer_class = SizeSerializer
-    
+
 
 class SizeCreateApiView(generics.ListCreateAPIView):
     queryset = Size.objects.all()
