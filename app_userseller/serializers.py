@@ -22,16 +22,23 @@ class SellerRegisterSerializer(serializers.ModelSerializer):
         if attrs['password'] != attrs['password_confirm']:
             raise serializers.ValidationError("Пароли не совпадают")
         
+        if ' ' in attrs['email_or_phone']:
+            raise ValidationError("Не должно быть пробелов!")
+
+
+        
+        
         email_or_phone = attrs.get('email_or_phone')
         if email_or_phone:
             if '@' in email_or_phone:
                 attrs['email'] = email_or_phone
             else:
-                try:
-                    phone_number = email_or_phone  # Замените на вашу собственную логику проверки номера телефона
-                    attrs['phone_number'] = phone_number
-                except ValidationError:
-                    raise serializers.ValidationError("Неверный формат номера телефона")
+                raise serializers.ValidationError("only email")
+                # try:
+                #     phone_number = email_or_phone  # Замените на вашу собственную логику проверки номера телефона
+                #     attrs['phone_number'] = phone_number
+                # except ValidationError:
+                #     raise serializers.ValidationError("Неверный формат номера телефона")
         password = attrs.get('password')
         validate_password_strength(password) 
         return attrs

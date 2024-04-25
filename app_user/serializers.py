@@ -8,6 +8,7 @@ import re
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
+    email_or_phone = serializers.EmailField(required=True)
     password_confirm = serializers.CharField(required=True)
     password = serializers.CharField(required=True,write_only=True)
     username = serializers.CharField(required=True)
@@ -35,11 +36,12 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             if '@' in email_or_phone:
                 attrs['email'] = email_or_phone
             else:
-                try:
-                    phone_number = email_or_phone  # Замените на вашу собственную логику проверки номера телефона
-                    attrs['phone_number'] = phone_number
-                except ValidationError:
-                    raise serializers.ValidationError("Неверный формат номера телефона")
+                raise serializers.ValidationError("only email")
+                # try:
+                #     phone_number = email_or_phone  # Замените на вашу собственную логику проверки номера телефона
+                #     attrs['phone_number'] = phone_number
+                # except ValidationError:
+                #     raise serializers.ValidationError("Неверный формат номера телефона")
         return attrs
     
 

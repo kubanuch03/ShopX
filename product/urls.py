@@ -20,6 +20,13 @@ urlpatterns = [
 
     path('', include(router.urls)),
     # path('viewed-products/', ViewedProductListCreate.as_view(), name='viewed-product-list'),
+
+    path('size/list/', SizeListApiView.as_view(), name='list-create'),
+    path('size/create/', SizeCreateApiView.as_view(), name='size-create'),
+    path('size/detail/<int:pk>/', SizeDetailApiView.as_view(), name='size-create'),
+    path('size/rud/<int:pk>/', SizeRUDApiView.as_view(), name='size-rud'),
+
+
 ]
 
 

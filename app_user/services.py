@@ -102,8 +102,9 @@ class CreateUserApiView(mixins.CreateModelMixin,generics.GenericAPIView):
                 serializer.validated_data['email'] = email_or_phone
                 send_verification_code(email_or_phone=email_or_phone)
             else:
-                serializer.validated_data['phone_number'] = email_or_phone
-                send_code_to_number(email_or_phone=int(email_or_phone))
+                return Response({"error":"Only email"})
+                # serializer.validated_data['phone_number'] = email_or_phone
+                # send_code_to_number(email_or_phone=int(email_or_phone))
 
         return Response({"success": "Код был отправлен на указанный реквизит"}, status=status.HTTP_201_CREATED)
 
@@ -188,7 +189,7 @@ class ChangePassword:
         except Exception as e:
             return str(e)
         
-    
+
     
     def send_email_code(email_or_phone):
 

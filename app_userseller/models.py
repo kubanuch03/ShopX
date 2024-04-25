@@ -11,7 +11,6 @@ from .sellermanager import CustomSellerManager
 
 
 class SellerProfile(AbstractBaseUser, PermissionsMixin):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='seller_profile',blank=True,null=True)
 
     email_or_phone = models.CharField(max_length= 30,unique = True)
     email = models.EmailField("Email",unique=True,max_length=255,null=True,blank=True)

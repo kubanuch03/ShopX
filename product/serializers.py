@@ -18,16 +18,17 @@ class ProductSerializer(serializers.ModelSerializer):
             return price
 
     def create(self, validated_data):
-        discount = validated_data.get('discount')
         price = validated_data['price']
+        discount = validated_data['discount']
+        if price <= 0 or discount <=0:
+            raise serializers.ValidationError({"price or discount": "Price or Discount must be a positive integer."})
+
         if discount is not None:
             discounted_price = self.apply_discount_to_price(price, discount)
-            validated_data['price'] = discounted_price
-
-            user = self.context['request'].user     # + kylych
-            validated_data['user'] = user  # + kylych
-
+            validated_data['discounted_price'] = discounted_price
         return super().create(validated_data)
+
+
 
     def get_mid_ocenka(self, instance):
         # Вычисляем среднюю оценку товара
@@ -44,28 +45,7 @@ class ProductSerializer(serializers.ModelSerializer):
         count_recall = recalls.count()
         return count_recall
     
-    class Meta:
-        model = Product
-        fields = (
-            'id',
-            'category',
-            'podcategory',
-            'user',
-            'name',
-            'slug',
-            'image1', 'image2', 'image3', 'image4',
-            'description',
-            'price',
-            'location',
-            'rating',
-            'available',
-            'created', 'updated',
-            'likes',
-            'discount',
-            'mid_ocenka',
-            'count_recall'
-        )
-        read_only_fields = ('id', 'slug', 'created', 'updated', 'mid_ocenka',)
+
 
 
 class RecallSerializer(serializers.ModelSerializer):
@@ -88,3 +68,4 @@ class RecallImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecallImages
         fields = ['id','images']
+
