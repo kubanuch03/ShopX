@@ -1,4 +1,5 @@
 from rest_framework.viewsets import generics
+from rest_framework import response
 from .models import Vip
 from .serializers import VipCreateSerializer, VipListSerializer
 
@@ -30,6 +31,20 @@ class VipDetailApiView(generics.ListAPIView):
 class VipCreateApiView(generics.CreateAPIView):
     queryset = Vip.objects.all()
     serializer_class = VipCreateSerializer
+
+    def create(self, request, *args, **kwargs):
+        vip_id = request.data.get('id')  # Получаем идентификатор из запроса
+        product_id = request.data.get('product') 
+        
+        vip_exists = Vip.objects.filter(product__id=product_id).exists()
+        if vip_exists:
+            return response.Response({"error": "this product already exists"})
+        
+        vip_serializer = self.get_serializer(data=request.data)
+        vip_serializer.is_valid(raise_exception=True)
+        vip_serializer.save()
+        return response.Response({"success": f"Vip created successfully"})
+        
 
 
 

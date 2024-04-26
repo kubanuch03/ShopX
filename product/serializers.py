@@ -1,14 +1,26 @@
 from rest_framework import serializers
 from .models import Product, Recall, RecallImages, Size
-from app_user.serializers import UserProfileSerializer, UserRecallSerializer
+from app_user.serializers import  UserRecallSerializer
 from app_vip.models import Vip
-
+import re
 
 
 class SizeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Size
         fields = ['id','sizes']
+    
+    def validate(self, attrs):
+        sizes = attrs['sizes']
+
+        if not re.match("[a-zA-Z]", sizes):
+            raise serializers.ValidationError(
+                'размер должен содержать только английские буквы'
+            )
+
+        attrs['sizes'] = sizes.upper()
+
+        return attrs
 
 
 

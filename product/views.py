@@ -1,5 +1,5 @@
 from rest_framework.response import Response
-from rest_framework import generics
+from rest_framework import generics, response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.filters import SearchFilter, OrderingFilter
@@ -210,6 +210,19 @@ class SizeDetailApiView(generics.RetrieveAPIView):
 class SizeCreateApiView(generics.ListCreateAPIView):
     queryset = Size.objects.all()
     serializer_class = SizeSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+    def create(self, request, *args, **kwargs):
+        sizes = request.data.get('sizes') 
+        
+        sizes_exists = Size.objects.filter(sizes=sizes).exists()
+        if sizes_exists:
+            return response.Response({"error": "this size already exists"})
+        
+        sizes_serializer = self.get_serializer(data=request.data)
+        sizes_serializer.is_valid(raise_exception=True)
+        sizes_serializer.save()
+        return response.Response({"success": f"size created successfully"})
 
 
 class SizeRUDApiView(generics.RetrieveUpdateDestroyAPIView):

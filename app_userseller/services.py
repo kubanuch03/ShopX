@@ -125,70 +125,78 @@ class CheckCode():
                 return Response({"error":"Пользователь не найден"})
 
 
-# class ChangePasswordOnReset:
+class ChangePasswordOnReset:
 
-#     def change_password_on_reset(self,request):
-#         # user = request.user
-#         serializer = self.get_serializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         code = serializer.validated_data.get('code')
-#         new_password = serializer.validated_data.get('password')
-#         confirm_password = serializer.validated_data.get('confirm_password')
+    def change_password_on_reset(self,request):
+        # user = request.user
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        code = serializer.validated_data.get('code')
+        new_password = serializer.validated_data.get('password')
+        confirm_password = serializer.validated_data.get('confirm_password')
 
-#         if new_password != confirm_password:
-#             return Response({"success":"Пароли не совпадают"}, status=status.HTTP_400_BAD_REQUEST)
+        if new_password != confirm_password:
+            return Response({"success":"Пароли не совпадают"}, status=status.HTTP_400_BAD_REQUEST)
         
-#         check_code_result = CheckCode.check_code(code)
-#         if 'error' in check_code_result:
-#             return Response(check_code_result['error'], status=status.HTTP_400_BAD_REQUEST)
+        check_code_result = CheckCode.check_code(code)
+        if 'error' in check_code_result:
+            return Response(check_code_result['error'], status=status.HTTP_400_BAD_REQUEST)
 
 
 
-#         user = CustomUser.objects.get(code=code)
-#         user.set_password(new_password)
-#         user.save()
-#         return {"success":"change password"}
+        user = SellerProfile.objects.get(code=code)
+        user.set_password(new_password)
+        user.save()
+        return {"success":"change password"}
 
 
 
-# class ChangePassword:
+class ChangePassword:
     
-#     @staticmethod
-#     def change_password_on_profile(request):
-#         user = request.user
-#         old_password = request.data.get('old_password')
-#         new_password = request.data.get('new_password')
-#         confirm_password = request.data.get('confirm_new_password')
+    @staticmethod
+    def change_password_on_profile(request):
+        user = request.user
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+        confirm_password = request.data.get('confirm_new_password')
 
-#         if not check_password(old_password, user.password):
-#             return Response({"error":"Старый пароль неверный"})
+        if not check_password(old_password, user.password):
+            print("old_password:", old_password)
+            print("user.password:", user.password)
+            return "Старый пароль неверный"
         
-#         if new_password != confirm_password:
-#             return Response({"error":"Пароли не совпадают"})
+        if new_password != confirm_password:
+            return "Пароли не совпадают"
 
-#         try:
-#             user.set_password(new_password)
-#             user.save()
-#             return Response({"success":"change password"})
-#         except Exception as e:
-#             return str(e)
-        
+        try:
+            user.set_password(new_password)
+            user.save()
+            return "success"
+        except Exception as e:
+            return str(e)
+    
+    @staticmethod
+    def compare_password(raw_password, hashed_password):
+        """
+        Функция для сравнения хешированного пароля с непосредственно введенным паролем.
+        """
+        return check_password(raw_password, hashed_password)
     
     
-#     def send_email_code(email_or_phone):
+    def send_email_code(email_or_phone):
 
-#         try:
-#             CustomUser.objects.get(email_or_phone=email_or_phone)
-#             if "@" in email_or_phone:
-#                 send_verification_code(email_or_phone=email_or_phone)
-#                 return Response({"success":"Код был отправлен на ваш email"})
-#             elif "996" in email_or_phone:
-#                 send_code_to_number(email_or_phone=int(email_or_phone))
-#                 return Response({"success":"Код был отправлен на ваш номер"})
-#             else:
-#                 return Response({"success":"The given data invalid"})
-#         except CustomUser.DoesNotExist:
-#             return Response({"success":"Пользователь с таким емейлом не существует"})
+        try:
+            SellerProfile.objects.get(email_or_phone=email_or_phone)
+            if "@" in email_or_phone:
+                send_verification_code(email_or_phone=email_or_phone)
+                return Response({"success":"Код был отправлен на ваш email"})
+            # elif "996" in email_or_phone:
+            #     send_code_to_number(email_or_phone=int(email_or_phone))
+            #     return Response({"success":"Код был отправлен на ваш номер"})
+            else:
+                return Response({"success":"The given data invalid"})
+        except SellerProfile.DoesNotExist:
+            return Response({"success":"Пользователь с таким емейлом не существует"})
         
 
 
