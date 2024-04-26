@@ -27,19 +27,7 @@ from rest_framework.views import APIView
 
 # #отправить код на почту       
 
-# # если user забыл пароль при входе
-# class ForgetPasswordView(generics.UpdateAPIView):
-#     serializer_class = ForgetPasswordSerializer
 
-#     http_method_names = ['patch',]
-#     def update(self, request, *args, **kwargs):
-        
-#         result = ChangePasswordOnReset.change_password_on_reset(self=self,request=request)
-
-#         if result == "success":
-#             return Response({"success ":"Пароль успешно изменен"}, status=status.HTTP_200_OK)
-#         else:
-#             return Response(result, status=status.HTTP_400_BAD_REQUEST)
 
 
 # class MarketListAPIView(generics.ListAPIView):
@@ -125,8 +113,9 @@ class SellerVerifyRegisterCode(generics.UpdateAPIView):
         return CheckCode.check_code(code=code)
     
 
-
-class SellerForgetPasswordSendCodeView(generics.UpdateAPIView):
+#=== Password ===========================================================================================================================================
+# отправка кода
+class SellerSendCodeView(generics.UpdateAPIView):
     serializer_class = SendCodeSerializer
     http_method_names = ['post']
 
@@ -145,7 +134,48 @@ class SellerForgetPasswordSendCodeView(generics.UpdateAPIView):
             user = SellerProfile.objects.create(email_or_phone=email_or_phone)
             send_verification_code(email_or_phone=email_or_phone)
             return Response({"success":"Код был отправлен на почту/телефон"}, status=status.HTTP_201_CREATED)
+        
+# # апи менят пароль в профиле 
+class UserResetPasswordView(generics.UpdateAPIView):
+    serializer_class = ChangePasswordSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
+    http_method_names = ['patch',]
+    def get_object(self):
+        return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            old_password = serializer.validated_data.get('old_password')
+            new_password = serializer.validated_data.get('new_password')
+
+            if not self.object.check_password(old_password):
+                
+                return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+
+            self.object.set_password(new_password)
+            self.object.save()
+            return Response({"success": "Password changed successfully."})
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+# # если user забыл пароль при входе
+class ForgetPasswordView(generics.UpdateAPIView):
+    serializer_class = ForgetPasswordSerializer
+
+    http_method_names = ['patch',]
+    def update(self, request, *args, **kwargs):
+        
+        result = ChangePasswordOnReset.change_password_on_reset(self=self,request=request)
+
+        if result == "success":
+            return Response({"success ":"Пароль успешно изменен"}, status=status.HTTP_200_OK)
+        else:
+            return Response(result, status=status.HTTP_400_BAD_REQUEST)
+#===  ===========================================================================================================================================
 
 
 # Admin
@@ -203,19 +233,6 @@ class SellerUpdateProfileShopApi(generics.UpdateAPIView):
 
 
 
-# # апи менят пароль в профиле 
-# class UserResetPasswordView(generics.UpdateAPIView):
-#     serializer_class = ChangePasswordSerializer
-#     permission_classes = [permissions.IsAuthenticated]
-
-#     http_method_names = ['patch',]
-#     def update(self, request, *args, **kwargs):
-#             result = ChangePassword.change_password_on_profile(request=request)
-
-#             if result == "success":
-#                 return Response({"success":"Пароль успешно изменен"}, status=status.HTTP_200_OK)
-#             else:
-#                 return Response(result, status=status.HTTP_400_BAD_REQUEST)
 
 # class ListProfileApi(generics.ListAPIView):
 #     queryset = CustomUser.objects.all()

@@ -1,5 +1,5 @@
 from rest_framework.response import Response
-from rest_framework import generics
+from rest_framework import generics, response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.filters import SearchFilter, OrderingFilter
@@ -7,8 +7,8 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from django.db.models import Avg, Count, Q
 from django_filters.rest_framework import DjangoFilterBackend
 
-from .serializers import ProductSerializer, RecallSerializer, RecallImageSerializer
-from .models import Product, Recall, RecallImages ,Like
+from .serializers import *
+from .models import Product, Recall, RecallImages ,Like, Size
 from .filters import CustomFilter
 from datetime import datetime
 from rest_framework import permissions
@@ -31,7 +31,7 @@ class ProductCreateApiView(CreateAPIView):
 
 class ProductListApiView(ListAPIView):
     queryset = Product.objects.all().annotate(rating=Avg("recall__rating"), likes=Count('like'))
-    serializer_class = ProductSerializer
+    serializer_class = ProductDetailSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = CustomFilter
     search_fields = ["name", "description"]
@@ -88,7 +88,7 @@ class ProductListApiView(ListAPIView):
 # Представление для получения деталей, обновления и удаления продукта
 class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all().annotate(rating=Avg("recall__rating"), likes=Count('like'))
-    serializer_class = ProductSerializer
+    serializer_class = ProductDetailSerializer
     # permission_classes = [IsSeller, ]
 
     def perform_update(self, serializer):
@@ -193,3 +193,43 @@ class LikeView(generics.RetrieveDestroyAPIView):
             return Response({"succes":"Like is deleted"})
         else:
             return Response({"success":"No Like"})
+        
+
+#====== Size   ===========================================================
+
+class SizeListApiView(generics.ListAPIView):
+    queryset = Size.objects.all()
+    serializer_class = SizeSerializer
+
+
+class SizeDetailApiView(generics.RetrieveAPIView):
+    queryset = Size.objects.all()
+    serializer_class = SizeSerializer
+    
+
+class SizeCreateApiView(generics.ListCreateAPIView):
+    queryset = Size.objects.all()
+    serializer_class = SizeSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+    def create(self, request, *args, **kwargs):
+        sizes = request.data.get('sizes') 
+        
+        sizes_exists = Size.objects.filter(sizes=sizes).exists()
+        if sizes_exists:
+            return response.Response({"error": "this size already exists"})
+        
+        sizes_serializer = self.get_serializer(data=request.data)
+        sizes_serializer.is_valid(raise_exception=True)
+        sizes_serializer.save()
+        return response.Response({"success": f"size created successfully"})
+
+
+class SizeRUDApiView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Size.objects.all()
+    serializer_class = SizeSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+
+
+

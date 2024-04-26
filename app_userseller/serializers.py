@@ -22,6 +22,9 @@ class SellerRegisterSerializer(serializers.ModelSerializer):
         if attrs['password'] != attrs['password_confirm']:
             raise serializers.ValidationError("Пароли не совпадают")
         
+        if ' ' in attrs['email_or_phone']:
+            raise ValidationError("Не должно быть пробелов!")
+        
         
         
         
@@ -30,11 +33,12 @@ class SellerRegisterSerializer(serializers.ModelSerializer):
             if '@' in email_or_phone:
                 attrs['email'] = email_or_phone
             else:
-                try:
-                    phone_number = email_or_phone  # Замените на вашу собственную логику проверки номера телефона
-                    attrs['phone_number'] = phone_number
-                except ValidationError:
-                    raise serializers.ValidationError("Неверный формат номера телефона")
+                raise serializers.ValidationError("only email")
+                # try:
+                #     phone_number = email_or_phone  # Замените на вашу собственную логику проверки номера телефона
+                #     attrs['phone_number'] = phone_number
+                # except ValidationError:
+                #     raise serializers.ValidationError("Неверный формат номера телефона")
         password = attrs.get('password')
         validate_password_strength(password) 
         return attrs
@@ -82,15 +86,15 @@ class LoginSerializer(serializers.ModelSerializer):
         return attrs
 
 
-# class ChangePasswordSerializer(serializers.Serializer):
-#     old_password = serializers.CharField(write_only=True)
-#     new_password = serializers.CharField(write_only=True)
-#     confirm_new_password = serializers.CharField(write_only=True)
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True)
+    confirm_new_password = serializers.CharField(write_only=True)
     
-#     class Meta:
-#         fields = ['old_password',
-#                   'new_password',
-#                   'confirm_new_password',]
+    class Meta:
+        fields = ['old_password',
+                  'new_password',
+                  'confirm_new_password',]
 
 class SendCodeSerializer(serializers.ModelSerializer):
     
@@ -100,13 +104,13 @@ class SendCodeSerializer(serializers.ModelSerializer):
         fields = ['email_or_phone']
 
 
-# class ForgetPasswordSerializer(serializers.Serializer):
-#     code = serializers.CharField(max_length=6,write_only=True)
-#     password = serializers.CharField(max_length=20,write_only=True)
-#     confirm_password = serializers.CharField(max_length=20,write_only=True)
+class ForgetPasswordSerializer(serializers.Serializer):
+    code = serializers.CharField(max_length=6,write_only=True)
+    password = serializers.CharField(max_length=20,write_only=True)
+    confirm_password = serializers.CharField(max_length=20,write_only=True)
 
-#     class Meta:
-#         fields = ['password','confirm_password','code']
+    class Meta:
+        fields = ['password','confirm_password','code']
 
 
 
@@ -140,13 +144,14 @@ class SellerProfileSerializer(serializers.ModelSerializer):
                   'whatsapp_link',
                   'tiktok_link',
                   'facebook_link',
+                  "kuba loh"
                   ]
 class SellerProfileDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SellerProfile
         fields = [
-                  'user',
+                #   'user',
                   'username',
                   'surname',
                   'email_or_phone',

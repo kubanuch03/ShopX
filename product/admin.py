@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product, Recall, RecallImages
+from .models import *
 
 
 
@@ -45,3 +45,7 @@ class RecallAdmin(admin.ModelAdmin):
 @admin.register(RecallImages)
 class RecallImagesAdmin(admin.ModelAdmin):
     list_display = ["id","images",]
+
+@admin.register(Size)
+class SizeAdmin(admin.ModelAdmin):
+    list_display = ["id","sizes",]
