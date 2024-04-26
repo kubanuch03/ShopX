@@ -8,5 +8,6 @@ class WishlistItemSerializer(serializers.ModelSerializer):
             'id',
             'user',
             'product',
+            'slug',
             'created_at'
         ]

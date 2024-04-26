@@ -14,6 +14,8 @@ urlpatterns.extend(
         # # Wishlist
         path('add-wishlist/', WishlistModelViewSet.as_view({"post": "add_wishlist"}), name='add_wishlist'),
         path('my-wishlist/', WishlistModelViewSet.as_view({"get": "my_wishlist"}), name='my_wishlist'),
+        path('remove-wishlist/', WishlistModelViewSet.as_view({'delete': 'remove_wishlist'}), name='remove_wishlist'),
         path('test_/', WishlistModelViewSet.as_view({'get': 'test_method'}), name='test_wishlist'),
+
     ]
 )
