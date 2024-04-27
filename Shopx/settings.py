@@ -63,6 +63,8 @@ INSTALLED_APPS = [
     "app_user",
     "app_userseller",
     "app_baner",
+    "user_profiles",
+    "app_recommendations",
 ]
 
 
@@ -161,10 +163,10 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 STATIC_URL = "/static/"
-STATIC_ROOT = "/usr/src/app/static"
+STATIC_ROOT = "/home/hello/Desktop"
 
 MEDIA_URL = "/media/"
-MEDIA_ROOT = "/usr/src/app/media"
+# MEDIA_ROOT = "/usr/src/app/media"
 
 
 

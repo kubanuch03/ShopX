@@ -193,7 +193,7 @@ class LogoutView(APIView):
 # # === Profile =========================================================================================================================================================
 
 
-class SellerUpdateProfileShopApi(generics.UpdateAPIView):
+class SellerUpdateProfileShopApi(generics.RetrieveUpdateAPIView):
     queryset = SellerProfile.objects.all()
     serializer_class = SellerProfileSerializer
     http_method_names = ['patch',]

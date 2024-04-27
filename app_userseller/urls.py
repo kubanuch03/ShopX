@@ -13,7 +13,6 @@ urlpatterns = [
 #     path('forget-password/reset/',forget_password.user_forget_password_reset_view, name='reset_password'), # забыл пароль при входе
 
 
-
 #     path('profiles/', ListProfileApi.as_view(), name=''),
 #     path('profile/<int:id>/', DetailUserProfileApi.as_view(), name=''),
 #     path('profile/update/<int:id>/', UpdateUserProfileApi.as_view(), name=''),
