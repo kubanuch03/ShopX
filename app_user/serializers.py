@@ -66,7 +66,7 @@ class VerifyCodeSerializer(serializers.ModelSerializer):
 class LoginSerializer(serializers.ModelSerializer):
     password = serializers.CharField(required=True)
     email_or_phone = serializers.CharField(required=True)
-    
+    print('here -=-=-=-=-=-=-= log serializer')
     class Meta:
         ref_name = "UserLogin" 
         model = CustomUser
@@ -75,7 +75,7 @@ class LoginSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         email_or_phone = attrs.get('email_or_phone')
         password = attrs.get('password')
-
+        print('here -=-=-=-=-=-=-=')
         if not email_or_phone or not password:
             raise serializers.ValidationError("Both email/phone and password are required")
 

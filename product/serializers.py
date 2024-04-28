@@ -82,6 +82,11 @@ class ProductSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'slug', 'created', 'updated','mid_ocenka',)
 
     
+    count_recall = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Product
+        fields = '__all__'
 
     def apply_discount_to_price(self, price, discount):
         if discount > 0 and discount <= 100:
@@ -122,6 +127,7 @@ class ProductSerializer(serializers.ModelSerializer):
         recalls = instance.recall_set.all()
         count_recall = recalls.count()
         return count_recall
+
     
     
   

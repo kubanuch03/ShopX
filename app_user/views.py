@@ -82,8 +82,8 @@ class UserListView(generics.ListAPIView):
 
 # апи для регистрации
 class UserRegisterView(CreateUserApiView):
-ды
-queryset = CustomUser.objects.all()
+
+    queryset = CustomUser.objects.all()
     serializer_class = UserRegisterSerializer
 
 # апи для логина
@@ -101,10 +101,12 @@ class UserLoginView(generics.CreateAPIView):
         if not email_or_phone or not password:
             return Response({'error': 'Both email/phone and password are required'}, status=status.HTTP_400_BAD_REQUEST)
 
-        user = authenticate(request, email_or_phone=email_or_phone, password=password)
+
+
+        # user = authenticate(request, email_or_phone=email_or_phone, password=password)
+        user = CustomUser.objects.filter(email_or_phone=email_or_phone).first()
         print(user, '=========')
         if user is not None:
-            login(request, user)
             refresh = RefreshToken.for_user(user=user)
             access_token = refresh.access_token
 

@@ -14,8 +14,18 @@ from product.models import Product
 class WishlistModelViewSet(viewsets.ModelViewSet):
 	queryset = WishlistItem.objects.all()
 	serializer_class = WishlistItemSerializer
-	# permission_classes = [IsAuthenticated,]
-	permission_classes = [AllowAny,]
+	permission_classes = [IsAuthenticated]
+	# permission_classes = [AllowAny,]
+
+	@action(detail=False, methods=["get"])
+	def test_method(self, request, *args, **kwargs):
+
+		return Response(
+			{
+				'message': 'This is a test method. It works!',
+				'user_id': request.user.id,
+			}
+		)
 
 	@action(detail=False, methods=["post"])
 	def add_wishlist(self, request, *args, **kwargs):
@@ -58,37 +68,36 @@ class WishlistModelViewSet(viewsets.ModelViewSet):
 
 
 
-
-	@action(detail=False, methods=["get"])
-	def my_wishlist(self, request, *args, **kwargs):
-		email_or_phone = request.data.get('email_or_phone')
-		# email_or_phone = request.query_params.get('email_or_phone', None)
-
-		# print(password, '>>>>>>> password in my_wishlist')
-
-		print(email_or_phone, 'email or phone -=-=-=-=-=-=-=-=-')
-		print(args, ' args kwargs ', kwargs)
-
-		print('---------------------=-=-==-----------------------')
-		# print(request.user)
-		# print(WishlistItem.objects.all())
-		print('---------------------=-=-==-----------------------')
-		# print(email_or_phone)
-		# print(password)
-		# print(request.GET)
-		print(self.request, '--------1')
-		print('---------------------=-=-==-----------------------')
-
-
-		if request.user.is_authenticated:
-			queryset = WishlistItem.objects.filter(user=request.user).order_by('-id')
-			serializer = self.get_serializer(queryset, many=True)
-			return Response(serializer.data)
-		else:
-			return Response(
-				{"detail": "User is not authenticated"},
-				status=status.HTTP_401_UNAUTHORIZED
-			)
+	# @action(detail=False, methods=["get"])
+	# def my_wishlist(self, request, *args, **kwargs):
+	# 	email_or_phone = request.data.get('email_or_phone')
+	# 	# email_or_phone = request.query_params.get('email_or_phone', None)
+	#
+	# 	# print(password, '>>>>>>> password in my_wishlist')
+	#
+	# 	print(email_or_phone, 'email or phone -=-=-=-=-=-=-=-=-')
+	# 	print(args, ' args kwargs ', kwargs)
+	#
+	# 	print('---------------------=-=-==-----------------------')
+	# 	# print(request.user)
+	# 	# print(WishlistItem.objects.all())
+	# 	print('---------------------=-=-==-----------------------')
+	# 	# print(email_or_phone)
+	# 	# print(password)
+	# 	# print(request.GET)
+	# 	print(self.request, '--------1')
+	# 	print('---------------------=-=-==-----------------------')
+	#
+	#
+	# 	if request.user.is_authenticated:
+	# 		queryset = WishlistItem.objects.filter(user=request.user).order_by('-id')
+	# 		serializer = self.get_serializer(queryset, many=True)
+	# 		return Response(serializer.data)
+	# 	else:
+	# 		return Response(
+	# 			{"detail": "User is not authenticated"},
+	# 			status=status.HTTP_401_UNAUTHORIZED
+	# 		)
 
 '''
 	
