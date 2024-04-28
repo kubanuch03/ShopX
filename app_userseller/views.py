@@ -128,7 +128,9 @@ class SellerSendCodeView(generics.UpdateAPIView):
 =======
 '''
 
-class SellerForgetPasswordSendCodeView(generics.UpdateAPIView):
+#=== Password ===========================================================================================================================================
+# отправка кода
+class SellerSendCodeView(generics.UpdateAPIView):
     serializer_class = SendCodeSerializer
     http_method_names = ['post']
 
