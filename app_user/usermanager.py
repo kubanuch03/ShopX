@@ -1,11 +1,14 @@
 from django.contrib.auth.models import BaseUserManager
+from django.utils.translation import gettext_lazy as _
+
 
 class CustomUserManager(BaseUserManager):
 
     use_in_migrations = True
 
     def create_user(self, email_or_phone=None,password=None, **extra_fields):
-
+        if not password:
+            raise ValueError(_("The password must be set"))
 
         user = self.model(email_or_phone=email_or_phone, **extra_fields)
         user.set_password(password)

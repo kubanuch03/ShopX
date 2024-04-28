@@ -28,6 +28,7 @@ class SellerRegisterSerializer(serializers.ModelSerializer):
         
         
         
+
         email_or_phone = attrs.get('email_or_phone')
         if email_or_phone:
             if '@' in email_or_phone:
@@ -79,7 +80,7 @@ class LoginSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         email_or_phone = attrs.get('email_or_phone')
         password = attrs.get('password')
-
+        print(password, '/*/*/*/*/*/*/*')
         if not email_or_phone or not password:
             raise serializers.ValidationError("Both email/phone and password are required")
 

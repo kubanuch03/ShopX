@@ -99,6 +99,11 @@ class ProductSerializer(serializers.ModelSerializer):
         if discount is not None:
             discounted_price = self.apply_discount_to_price(price, discount)
             validated_data['discounted_price'] = discounted_price
+            validated_data['price'] = discounted_price
+
+            user = self.context['request'].user     # + kylych
+            validated_data['user'] = user  # + kylych
+
         return super().create(validated_data)
 
 
@@ -119,6 +124,7 @@ class ProductSerializer(serializers.ModelSerializer):
         return count_recall
     
     
+  
 
 
 class RecallSerializer(serializers.ModelSerializer):

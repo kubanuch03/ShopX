@@ -111,7 +111,7 @@ class ForgetPasswordSerializer(serializers.Serializer):
 class UserListSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ["__all__"]
+        fields = '__all__'
 
 
 class UserProfileSerializer(serializers.ModelSerializer):

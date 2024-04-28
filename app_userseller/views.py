@@ -73,11 +73,14 @@ class SellerLoginView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         email_or_phone = request.data.get('email_or_phone')
         password = request.data.get('password')
+        print(password, '/*/*/*/*/*/*/*')
+
 
         if not email_or_phone or not password:
             return Response({'error':'Both email/phone and password are required'}, status=status.HTTP_400_BAD_REQUEST)
         
         user = SellerProfile.objects.filter(Q(email=email_or_phone) | Q(phone_number=email_or_phone)).first()
+        print(user.password, '/*/*/*/*/*/*/*')
 
         if not user:
             return Response({'error': 'The user does not exist'}, status=status.HTTP_404_NOT_FOUND)
@@ -112,10 +115,18 @@ class SellerVerifyRegisterCode(generics.UpdateAPIView):
         code = serializer.validated_data.get('code')
         return CheckCode.check_code(code=code)
     
+'''
+{
+    "code": "XTCDUQ"
+}
 
 #=== Password ===========================================================================================================================================
 # отправка кода
 class SellerSendCodeView(generics.UpdateAPIView):
+=======
+'''
+
+class SellerForgetPasswordSendCodeView(generics.UpdateAPIView):
     serializer_class = SendCodeSerializer
     http_method_names = ['post']
 
