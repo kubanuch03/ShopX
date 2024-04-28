@@ -4,6 +4,11 @@ from rest_framework import permissions
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework import generics
+from rest_framework_simplejwt.tokens import AccessToken
+from django.contrib.auth.hashers import check_password
+
+from django.contrib.auth import authenticate, login
+
 from .services import *
 from .serializers import *
 from .models import CustomUser as User
@@ -77,7 +82,8 @@ class UserListView(generics.ListAPIView):
 
 # апи для регистрации
 class UserRegisterView(CreateUserApiView):
-    queryset = CustomUser.objects.all()
+ды
+queryset = CustomUser.objects.all()
     serializer_class = UserRegisterSerializer
 
 # апи для логина
@@ -89,28 +95,61 @@ class UserLoginView(generics.CreateAPIView):
         email_or_phone = request.data.get('email_or_phone')
         password = request.data.get('password')
 
+        print(email_or_phone, 'email_or_phone <<<<<<<<<<<<<<<<<<<<<<<<<<<<')
+        print(password, 'password <<<<<<<<<<<<<<<<<<<<<<<<<<<<')
+
         if not email_or_phone or not password:
-            return Response({'error':'Both email/phone and password are required'}, status=status.HTTP_400_BAD_REQUEST)
-        try:
-            user = CustomUser.objects.get(email_or_phone=email_or_phone)
-        except CustomUser.DoesNotExist:
-            return Response({'error':'The user does not exist'})
-        if not check_password(password, user.password):
-            return Response({'error':'Incorrect password'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        
-        refresh = RefreshToken.for_user(user=user)
-        access_token = refresh.access_token
-        return Response({
-            'detail': 'Successfully confirmed your code',
-            'id': user.id,
-            'is_seller': user.is_usual,
-            'email': user.email_or_phone,
-            'refresh': str(refresh),
-            'access': str(access_token),
-            'refresh_lifetime_days': refresh.lifetime.days,
-            'access_lifetime_seconds': access_token.lifetime.total_seconds()
-        })
+            return Response({'error': 'Both email/phone and password are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = authenticate(request, email_or_phone=email_or_phone, password=password)
+        print(user, '=========')
+        if user is not None:
+            login(request, user)
+            refresh = RefreshToken.for_user(user=user)
+            access_token = refresh.access_token
+
+            return Response({
+                'detail': 'Successfully confirmed your code',
+                'id': user.id,
+                'is_seller': user.is_usual,
+                'email': user.email_or_phone,
+                'refresh': str(refresh),
+                'access': str(access_token),
+                'refresh_lifetime_days': refresh.lifetime.days,
+                'access_lifetime_seconds': access_token.lifetime.total_seconds()
+            })
+        else:
+            return Response({'error': 'Incorrect email/phone or password'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # def post(self, request, *args, **kwargs):
+    #     email_or_phone = request.data.get('email_or_phone')
+    #     password = request.data.get('password')
+    #
+    #
+    #     if not email_or_phone or not password:
+    #         return Response({'error':'Both email/phone and password are required'}, status=status.HTTP_400_BAD_REQUEST)
+    #     try:
+    #         user = CustomUser.objects.get(email_or_phone=email_or_phone)   # ++++++
+    #         print(user, 'login user --=-=-=-=-=-=-=-=-=------=-=-==--=')
+    #     except CustomUser.DoesNotExist:
+    #         return Response({'error':'The user does not exist'})
+    #     if not check_password(password, user.password):
+    #         return Response({'error':'Incorrect password'}, status=status.HTTP_400_BAD_REQUEST)
+    #
+    #
+    #     refresh = RefreshToken.for_user(user=user)   # +++++++
+    #     access_token = refresh.access_token    # +++++++++++++++
+    #
+    #     return Response({
+    #         'detail': 'Successfully confirmed your code',
+    #         'id': user.id,
+    #         'is_seller': user.is_usual,
+    #         'email': user.email_or_phone,
+    #         'refresh': str(refresh),
+    #         'access': str(access_token),
+    #         'refresh_lifetime_days': refresh.lifetime.days,
+    #         'access_lifetime_seconds': access_token.lifetime.total_seconds()
+    #     })
 
 
 # апи который проверяет код который был отправлен на указанный email и в ответ передает токен
