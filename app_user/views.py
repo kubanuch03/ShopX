@@ -146,3 +146,30 @@ class UserUpdateApiView(generics.RetrieveUpdateAPIView):
 
 
 
+from rest_framework.generics import GenericAPIView
+from rest_framework.mixins import UpdateModelMixin
+from django.contrib.auth.hashers import make_password
+from django.utils.crypto import constant_time_compare
+
+
+class ChangePasswordUserAPIVIew(UpdateModelMixin, GenericAPIView):
+    serializer_class = ChangePasswordSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        user = CustomUser.objects.get(id=self.request.user.id)
+        return user
+
+    def patch(self, *args, **kwargs):
+        serializer = self.get_serializer(data=self.request.data)
+        if serializer.is_valid():
+            new_password = self.request.data.get('new_password')
+            confirming_new_password = self.request.data.get('confirming_new_password')
+            if constant_time_compare(new_password, confirming_new_password):
+                user = self.get_object()
+                user.password = make_password(confirming_new_password)
+                user.save()
+                return Response({'Вы ушпешно поменяли свой пароль'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'Пароли не совподают'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors)
