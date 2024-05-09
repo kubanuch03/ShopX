@@ -29,7 +29,7 @@ urlpatterns = [
 
     path('logout/seller/', LogoutView.as_view(), name='user logout'),
 
-    path('change/password/', ChangePasswordAPIVIew.as_view()),
+    path('change/password/seller/', ChangePasswordAPIVIew.as_view()),
 
 #     path('market/', MarketListAPIView.as_view(), name=''),
 #     path('logout/', LogoutView.as_view(), name='logout'),
