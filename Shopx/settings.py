@@ -250,3 +250,5 @@ CORS_ALLOW_HEADERS = [
     "x-csrftoken",
     "x-requested-with",
 ]
+
+PASSWORD_CHANGE_URL = config("PASSWORD_CHANGE_URL")
