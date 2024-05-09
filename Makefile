@@ -12,7 +12,6 @@ migrate:
 	python manage.py makemigrations product
 	python manage.py makemigrations app_user
 	python manage.py makemigrations user_profiles
-	python manage.py makemigrations app_recommendations
 	python manage.py makemigrations app_baner
 	python manage.py migrate
  

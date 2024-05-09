@@ -197,7 +197,7 @@ class SellerUpdateProfileShopApi(generics.RetrieveUpdateAPIView):
     queryset = SellerProfile.objects.all()
     serializer_class = SellerProfileSerializer
     http_method_names = ['patch',]
-    permission_classes = [permissions.IsAuthenticated,]
+    # permission_classes = [permissions.IsAuthenticated,]
     lookup_field = 'pk'
 
 
