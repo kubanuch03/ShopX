@@ -23,11 +23,13 @@ urlpatterns = [
 #     path('seller/login/',SellerLoginView.as_view(), name='seller-login'),
     path('become/seller/', BecomeSellerView.as_view(), name='seller-become_seller'),
     path('seller/profiles/detail/<int:pk>/',SellerDetailApiview.as_view(),name='seller-profile-detail'),
-#     path('seller-profiles/',SellerListApiview.as_view()),
+    path('seller-profiles/',SellerListApiview.as_view()),
 #     path('seller-profile/<int:id>/', DetailUserProfileApi.as_view(), name=''),
     path('seller/profile/update/<int:pk>/', SellerUpdateProfileShopApi.as_view(), name='seller-profile-update'),
 
     path('logout/seller/', LogoutView.as_view(), name='user logout'),
+
+    path('change/password/', ChangePasswordAPIVIew.as_view()),
 
 #     path('market/', MarketListAPIView.as_view(), name=''),
 #     path('logout/', LogoutView.as_view(), name='logout'),

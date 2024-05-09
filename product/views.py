@@ -35,6 +35,7 @@ class ProductListApiView(ListAPIView):
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = CustomFilter
     search_fields = ["name", "description"]
+    permission_classes = [permissions.IsAuthenticated, ]
     ordering_fields = ["name", "price"]
 
     def HistorySearch(self):
