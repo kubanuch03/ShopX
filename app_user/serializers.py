@@ -80,14 +80,12 @@ class LoginSerializer(serializers.ModelSerializer):
         return attrs
 
 
-class ChangePasswordSerializer(serializers.Serializer):
-    old_password = serializers.CharField(write_only=True)
+class ChangePasswordSerializer(serializers.Serializer): 
     new_password = serializers.CharField(write_only=True)
     confirm_new_password = serializers.CharField(write_only=True)
     
     class Meta:
-        fields = ['old_password',
-                  'new_password',
+        fields = ['new_password',
                   'confirm_new_password',]
 
 class SendCodeSerializer(serializers.ModelSerializer):

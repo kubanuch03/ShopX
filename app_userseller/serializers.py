@@ -86,10 +86,25 @@ class LoginSerializer(serializers.ModelSerializer):
         return attrs
 
 
+<<<<<<< HEAD
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(write_only=True)
     new_password = serializers.CharField(write_only=True)
     confirm_new_password = serializers.CharField(write_only=True)
+=======
+
+class ChangePasswordSerializer(serializers.Serializer):
+    new_password = serializers.CharField(max_length=30)
+    confirming_new_password = serializers.CharField(max_length=30)
+
+    class Meta:
+        fields = ['new_password', 'confirming_new_password']    
+
+# class ChangePasswordSerializer(serializers.Serializer):
+#     old_password = serializers.CharField(write_only=True)
+#     new_password = serializers.CharField(write_only=True)
+#     confirm_new_password = serializers.CharField(write_only=True)
+>>>>>>> origin/sadyr
     
     class Meta:
         fields = ['old_password',

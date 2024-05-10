@@ -70,7 +70,7 @@ class SellerProfile(AbstractBaseUser, PermissionsMixin):
     )
 
     def __str__(self) -> str:
-        return f'Seller {self.email_or_phone}'
+        return f'Seller {self.email_or_phone}, {self.id}'
     
     class Meta:
         verbose_name = 'Продавец'
