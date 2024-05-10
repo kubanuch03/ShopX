@@ -66,22 +66,7 @@ class ProductListApiView(ListAPIView):
         queryset = queryset.order_by('-num_reviews')
 
         return queryset
-    # @action(
-    #     methods=['get'],
-    #     detail=False,
-    #     url_path='profile',
-    #     serializer_class=None,
-    #     permission_classes=[AllowAny]
-    # )
-
-
-    # def get(self, request):
-    #     recent_words = cache.get('recent_words')
-    #     if not recent_words:
-    #         recent_words = Product.objects.order_by('-created_at')[:10]  
-    #         cache.set('recent_words', recent_words, REDIS_TIMEOUT)
-    #     serializer = ProductSerializer(recent_words, many=True)
-    #     return Response(serializer.data)
+   
 
 
 

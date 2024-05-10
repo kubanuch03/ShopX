@@ -12,8 +12,7 @@ WORKDIR /app
 COPY requirements.txt /app/
 
 # Install dependencies
-RUN pip install  gunicorn --no-cache-dir 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install  gunicorn --no-cache-dir && pip install --no-cache-dir -r requirements.txt
 
 
 

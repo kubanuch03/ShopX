@@ -11,13 +11,12 @@ schema_view = get_schema_view(
       title="Shop X",
       default_version='v1',
       description="API description",
-    #   terms_of_service="https://www.example.com/policies/terms/",
       contact=openapi.Contact(email="admin@gmail.com"),
       license=openapi.License(name="Digital Forge Tech License"),
    ),
    public=True,
    permission_classes=(permissions.AllowAny,),
-   url='http://3.123.17.71/',
+   # url='http://3.123.17.71/',
 )
 
 urlpatterns = [
