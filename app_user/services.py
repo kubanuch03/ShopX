@@ -6,7 +6,6 @@ from rest_framework import status
 from django.utils.translation import gettext as _
 from django.core.mail import send_mail
 from django.contrib.auth.hashers import check_password
-from decouple import config
 
 from .models import CustomUser
 import random
@@ -24,10 +23,8 @@ def send_verification_code(email_or_phone):
 
     verification_code = generate_verification_code()
 
-    subject = 'Verification Code and Password Reset Link'
-    message = f'Your verification code is: {verification_code}\n\n' \
-              f'You can reset your password by visiting the following link:\n' \
-              f'{config("PASSWORD_CHANGE_URL")}'
+    subject = 'Verification Code'
+    message = f'Your verification code is: {verification_code}\n\n'
 
     sender_email = 'kubanuch03@gmail.com'
     recipient_email = email_or_phone
