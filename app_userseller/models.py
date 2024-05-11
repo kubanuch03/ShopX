@@ -32,6 +32,7 @@ class SellerProfile(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_official_shop = models.BooleanField(default=False)
+    is_usual = models.BooleanField(default=False)
 
     image = models.ImageField(upload_to='seller/profiles/')
     category_sc= models.ForeignKey('CategorySC',on_delete=models.CASCADE,blank=True,null=True)

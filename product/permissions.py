@@ -1,4 +1,4 @@
-from rest_framework.permissions import BasePermission
+from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 
 class IsAnonymoused(BasePermission):
@@ -12,18 +12,18 @@ class IsAnonymoused(BasePermission):
         return bool(request.user.is_anonymous)
 
 
-class IsSeller(BasePermission):
+class IsSellerorAdmin(BasePermission):
     """
         Allow access only user that is seller
     """
 
     message = 'permission denied, you are not seller user'
 
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user
+    # def has_permission(self, request, view):
+    #     return request.user.is_authenticated and request.user
 
     def has_object_permission(self, request, view, obj):
-        return bool(obj.is_seller)
+        return (obj.user.is_seller)
 
 
 class IsSellerAndHasStore(BasePermission):

@@ -18,15 +18,17 @@ from django.core.cache import cache
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 
+from .permissions import IsSellerorAdmin
 
 
 class ProductCreateApiView(CreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [permissions.AllowAny, ]  #!!!!! сделать что бы создавать мог только админ и продавец
-                       
-    # def perform_create(self, serializer):
-    #     serializer.save(user=self.request.user)
+    permission_classes = [IsSellerorAdmin,permissions.IsAdminUser] 
+    
+   
+
+
 
 
 class ProductListApiView(ListAPIView):
@@ -35,25 +37,24 @@ class ProductListApiView(ListAPIView):
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = CustomFilter
     search_fields = ["name", "description"]
-    permission_classes = [permissions.IsAuthenticated, ]
     ordering_fields = ["name", "price"]
 
     def HistorySearch(self):
         pass
 
-    def get_queryset(self):
-        # Пытаемся получить результат из кеша
-        cached_queryset = cache.get('cached_product_queryset')
-        if cached_queryset is not None:
-            return cached_queryset
+    # def get_queryset(self):
+    #     # Пытаемся получить результат из кеша
+    #     cached_queryset = cache.get('cached_product_queryset')
+    #     if cached_queryset is not None:
+    #         return cached_queryset
 
-        # Если результат не найден в кеше, выполняем запрос к базе данных
-        queryset = self._get_queryset_from_database()
+    #     # Если результат не найден в кеше, выполняем запрос к базе данных
+    #     queryset = self._get_queryset_from_database()
 
-        # Кешируем результат на 1 час
-        cache.set('cached_product_queryset', queryset, timeout=3600)
+    #     # Кешируем результат на 1 час
+    #     cache.set('cached_product_queryset', queryset, timeout=10)
 
-        return queryset
+    #     return queryset
 
     def _get_queryset_from_database(self):
         # Получаем список товаров с аннотацией средней оценки и количества отзывов
@@ -67,23 +68,6 @@ class ProductListApiView(ListAPIView):
         queryset = queryset.order_by('-num_reviews')
 
         return queryset
-    # @action(
-    #     methods=['get'],
-    #     detail=False,
-    #     url_path='profile',
-    #     serializer_class=None,
-    #     permission_classes=[AllowAny]
-    # )
-
-
-    # def get(self, request):
-    #     recent_words = cache.get('recent_words')
-    #     if not recent_words:
-    #         recent_words = Product.objects.order_by('-created_at')[:10]  
-    #         cache.set('recent_words', recent_words, REDIS_TIMEOUT)
-    #     serializer = ProductSerializer(recent_words, many=True)
-    #     return Response(serializer.data)
-
 
 
 # Представление для получения деталей, обновления и удаления продукта
@@ -230,6 +214,7 @@ class SizeRUDApiView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Size.objects.all()
     serializer_class = SizeSerializer
     permission_classes = [permissions.IsAdminUser]
+
 
 
 

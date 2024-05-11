@@ -70,7 +70,7 @@ services:
        context: .
        dockerfile: nginx/Dockerfile
      ports:
-       - "80:80"
+       - "81:81"
      volumes:
       - static_volume:/usr/src/app/static
       - media_volume:/usr/src/app/media

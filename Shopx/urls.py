@@ -42,7 +42,7 @@ urlpatterns = [
     path('user/', include("app_user.urls")),
     path('seller/', include("app_userseller.urls")),
     path('baner/', include("app_baner.urls")),
-    path('vip/', include("app_vip.urls"))
+    path('vip/', include("app_vip.urls")),
 
 
     

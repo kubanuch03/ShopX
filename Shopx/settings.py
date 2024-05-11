@@ -45,14 +45,12 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # lib
     'channels',
-    "twilio",
     "rest_framework",
     "rest_framework_simplejwt",
     "drf_spectacular",
     "corsheaders",
     "django_filters",
     "drf_yasg",
-    "djoser",
     'notification',
     # app
     "Category",
@@ -63,7 +61,6 @@ INSTALLED_APPS = [
     "app_user",
     "app_userseller",
     "app_baner",
-    "user_profiles",
 ]
 
 
@@ -162,10 +159,10 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 STATIC_URL = "/static/"
-STATIC_ROOT = "/home/hello/Desktop"
+STATIC_ROOT = "/usr/src/static"
 
 MEDIA_URL = "/media/"
-# MEDIA_ROOT = "/usr/src/app/media"
+MEDIA_ROOT = "/usr/src/app/media"
 
 
 

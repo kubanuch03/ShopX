@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from ..app_userbase.usermanager import CustomUserManager
-from ..app_userbase.validators import validate_password_strength
+from .usermanager import CustomUserManager
+from .validators import validate_password_strength
 from django.core.validators import RegexValidator
 
 class User(AbstractBaseUser, PermissionsMixin):
