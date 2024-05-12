@@ -1,5 +1,5 @@
 from django.db import models
-from app_user.models import CustomUser as User
+from app_user.models import User
 
 
 class SupportServiceRoom(models.Model):
