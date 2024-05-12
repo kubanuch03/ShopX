@@ -4,9 +4,13 @@ from rest_framework import permissions
 
 from .services import *
 from .serializers import *
-from .models import CustomUser as User
+from .models import SellerProfile
+# from app_user.models import User
+# from app_userbase.models import BaseUser
+
 from django.db.models import Q
 from rest_framework.views import APIView
+from app_user.models import User  
 
 # #===================================================================================================================================================================================
 # class LogoutView(APIView):
@@ -54,16 +58,27 @@ class SellerRegisterView(CreateUserApiView):
 class BecomeSellerView(generics.CreateAPIView):
     
     # permission_classes = [permissions.IsAuthenticated]
-    serializer_class = BecomeSellerSerializer
+    # serializer_class = BecomeSellerSerializer
     
     
     def post(self, request, *args, **kwargs):
-        user = request.user
-        news_seller = SellerProfile.objects.create(
-            user=user,
-            is_seller=True
-        )
-        return Response({'success':f"Вы успешно стали продавцом"}, status=status.HTTP_200_OK)
+        user_id = request.user.id
+        user = User.objects.get(id=user_id)
+    
+            # Обновляем поле is_seller пользователя на True
+        try:
+            seller = SellerProfile.objects.get(id=user_id)
+            if seller:
+                return Response({"dublicate":"Такой продавец существует"},status=status.HTTP_400_BAD_REQUEST)
+        except:
+            new_seller = SellerProfile.objects.create(
+                user=user,
+                is_seller = True
+                
+            )
+        
+        return Response({'success': 'Вы успешно стали продавцом'}, status=status.HTTP_200_OK)
+       
     
 # # апи для логина
 class SellerLoginView(generics.CreateAPIView):
@@ -77,7 +92,7 @@ class SellerLoginView(generics.CreateAPIView):
         if not email_or_phone or not password:
             return Response({'error':'Both email/phone and password are required'}, status=status.HTTP_400_BAD_REQUEST)
         
-        user = SellerProfile.objects.filter(Q(email=email_or_phone) | Q(phone_number=email_or_phone)).first()
+        user = SellerProfile.objects.filter(Q(email_or_phone=email_or_phone)).first()
 
         if not user:
             return Response({'error': 'The user does not exist'}, status=status.HTTP_404_NOT_FOUND)
@@ -237,7 +252,6 @@ class SellerUpdateProfileShopApi(generics.RetrieveUpdateAPIView):
 from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import UpdateModelMixin
 from django.contrib.auth.hashers import make_password
-from app_user.models import CustomUser
 from django.utils.crypto import constant_time_compare
 
 

@@ -8,7 +8,7 @@ from django.core.mail import send_mail
 from django.contrib.auth.hashers import check_password
 from decouple import config
 
-from .models import CustomUser
+from .models import User
 import random
 import string
 import requests
@@ -33,9 +33,9 @@ def send_verification_code(email_or_phone):
     recipient_email = email_or_phone
 
     try:
-        user_obj = CustomUser.objects.get(email_or_phone=email_or_phone)
-    except CustomUser.DoesNotExist:
-        user_obj = CustomUser.objects.create(email_or_phone=email_or_phone)
+        user_obj = User.objects.get(email_or_phone=email_or_phone)
+    except User.DoesNotExist:
+        user_obj = User.objects.create(email_or_phone=email_or_phone)
     user_obj.code = verification_code
     user_obj.save()
 
@@ -73,8 +73,8 @@ def send_code_to_number(email_or_phone):
     # Предполагая, что email_or_phone является уникальным идентификатором пользователя,
     # необходимо определить логику поиска пользователя в базе данных
     try:
-        user_obj = CustomUser.objects.get(email=email_or_phone)
-    except CustomUser.DoesNotExist:
+        user_obj = User.objects.get(email=email_or_phone)
+    except User.DoesNotExist:
         # Обработка случая, когда пользователя с указанным email нет в базе данных
         user_obj = None
     
@@ -118,7 +118,7 @@ class CheckCode():
     @staticmethod
     def check_code(code):
         
-        user = CustomUser.objects.get(code=code,)
+        user = User.objects.get(code=code,)
         
         
         user.is_active = True
@@ -164,7 +164,7 @@ class ChangePasswordOnReset:
 
 
 
-        user = CustomUser.objects.get(code=code)
+        user = User.objects.get(code=code)
         user.set_password(new_password)
         user.save()
         return {"success":"change password"}
@@ -198,7 +198,7 @@ class ChangePassword:
     def send_email_code(email_or_phone):
 
         try:
-            CustomUser.objects.get(email_or_phone=email_or_phone)
+            User.objects.get(email_or_phone=email_or_phone)
             if "@" in email_or_phone:
                 send_verification_code(email_or_phone=email_or_phone)
                 return Response({"success":"Код был отправлен на ваш email"})
@@ -207,7 +207,7 @@ class ChangePassword:
                 return Response({"success":"Код был отправлен на ваш номер"})
             else:
                 return Response({"success":"The given data invalid"})
-        except CustomUser.DoesNotExist:
+        except User.DoesNotExist:
             return Response({"success":"Пользователь с таким емейлом не существует"})
         
 

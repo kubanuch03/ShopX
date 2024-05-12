@@ -1,5 +1,18 @@
 from django.urls import path
-from .views import *
+from .views import (
+    SellerSendCodeView,
+    ForgetPasswordView,
+    UserResetPasswordView,
+    SellerRegisterView,
+    SellerLoginView,
+    SellerVerifyRegisterCode,
+    BecomeSellerView,
+    SellerDetailApiview,
+    SellerListApiview,
+    SellerUpdateProfileShopApi,
+    LogoutView,
+    ChangePasswordAPIVIew
+)
 from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView
 urlpatterns = [
 

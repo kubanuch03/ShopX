@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import SellerProfile
+from app_user.models import User
 from product.serializers import Product
 from Category.serializers import CategorySerializer, PodCategorySerializer
 from django.core.exceptions import ValidationError
@@ -15,8 +16,8 @@ class SellerRegisterSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = SellerProfile
-        fields = ['email_or_phone','password','password_confirm','shop_name','location_latitude',
-                  'location_longitude',]
+        fields = ['email_or_phone','password','password_confirm','shop_name',
+                  ]
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password_confirm']:
@@ -28,12 +29,12 @@ class SellerRegisterSerializer(serializers.ModelSerializer):
         
         
         
-        email_or_phone = attrs.get('email_or_phone')
-        if email_or_phone:
-            if '@' in email_or_phone:
-                attrs['email'] = email_or_phone
-            else:
-                raise serializers.ValidationError("only email")
+        
+        # if email_or_phone:
+        #     if '@' in email_or_phone:
+        #         attrs['email'] = email_or_phone
+        #     else:
+        #         raise serializers.ValidationError("only email")
                 # try:
                 #     phone_number = email_or_phone  # Замените на вашу собственную логику проверки номера телефона
                 #     attrs['phone_number'] = phone_number
@@ -58,6 +59,7 @@ class BecomeSellerSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         return SellerProfile.objects.create(**validated_data)
+
     
 class VerifyCodeSerializer(serializers.ModelSerializer):
     
@@ -138,19 +140,15 @@ class SellerProfileSerializer(serializers.ModelSerializer):
         fields = [
                 #   'number',
                   'shop_name',
-                  'address',
-                  'location_latitude',
-                  'location_longitude',
+                #   'address',
+                #   'location_latitude',
+                #   'location_longitude',
                   'email_or_phone',
-                  'category_sc',
-                  'is_official_shop',
-                  'is_active',
-                  'is_seller',
+                #   'category_sc',
                   'instagram_link',
                   'whatsapp_link',
                   'tiktok_link',
                   'facebook_link',
-                  "kuba loh"
                   ]
 class SellerProfileDetailSerializer(serializers.ModelSerializer):
 
