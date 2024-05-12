@@ -4,7 +4,7 @@ from .usermanager import CustomUserManager
 from .validators import validate_password_strength
 from django.core.validators import RegexValidator
 
-class User(AbstractBaseUser, PermissionsMixin):
+class BaseUser(models.Model):
     email_or_phone = models.CharField(max_length= 30,unique = True,null= True, blank=True)
     email = models.EmailField("Email",unique=True,max_length=255,null=True,blank=True)
     phone_number = models.CharField(
@@ -36,11 +36,10 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
     def __str__(self) -> str:
-        return f"{self.username}"
+        return f"{self.email_or_phone}"
     
     class Meta:
-        verbose_name = 'Клиент'
-        verbose_name_plural = verbose_name
+        abstract = True
 
     USERNAME_FIELD = 'email_or_phone'
     REQUIRED_FIELDS = ['username']
