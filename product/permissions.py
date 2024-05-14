@@ -1,4 +1,7 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
+from rest_framework.exceptions import PermissionDenied
+
+from app_userseller.models import SellerProfile
 
 
 class IsAnonymoused(BasePermission):
@@ -13,14 +16,16 @@ class IsAnonymoused(BasePermission):
 
 
 class IsSellerorAdmin(BasePermission):
-    """
-        Allow access only user that is seller
-    """
 
-    message = 'permission denied, you are not seller user'
-
-    # def has_permission(self, request, view):
-    #     return request.user.is_authenticated and request.user
+    def has_permission(self, request, view):
+        if request.user.is_authenticated:
+            try:
+                seller_profile = SellerProfile.objects.get(email_or_phone=request.user)
+                if seller_profile.is_seller or request.user.is_staff:
+                    return True
+            except SellerProfile.DoesNotExist:
+                pass
+        raise PermissionDenied("Only admin or seller users can create product.")
 
     def has_object_permission(self, request, view, obj):
         return (obj.user.is_seller)
