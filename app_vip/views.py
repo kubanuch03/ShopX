@@ -16,13 +16,13 @@ class VipListApiView(generics.ListAPIView):
 
     def get_queryset(self):
         cache_key = 'vip_list'
-        cache_ttl = getattr(settings, 'CACHE_TTL', 15)
+        cache_ttl = getattr(settings, 'CACHE_TTL', 60)
 
         cached_queryset = cache.get(cache_key)
         
 
         if cached_queryset is not None:  
-            print('Кеш найден!')
+            print(cached_queryset)
             return cached_queryset
 
         queryset = list(Vip.objects.all().order_by('-id'))  
@@ -31,10 +31,55 @@ class VipListApiView(generics.ListAPIView):
         return queryset
 
 
-class VipDetailApiView(generics.ListAPIView):
+class VipDetailApiView(generics.RetrieveAPIView):
     queryset = Vip.objects.all()
     serializer_class = VipListSerializer
 
+
+    # def retrieve(self, request, *args, **kwargs):
+    #     vip_id = self.kwargs.get('pk')
+    #     cache_key = 'vip_list'
+        
+    #     # Получаем кешированный список объектов Vip
+    #     cached_vip_list = cache.get(cache_key)
+    #     if cached_vip_list:
+    #         # Поиск объекта Vip с заданным идентификатором
+    #         cached_vip = next((vip for vip in cached_vip_list if vip['id'] == vip_id), None)
+    #         if cached_vip:
+    #             print(cached_vip)
+    #             return response.Response(cached_vip)
+
+    #     # Если объект не найден в кеше, получаем его из базы данных
+    #     instance = self.get_object()
+    #     serializer = self.get_serializer(instance)
+    #     data = serializer.data
+
+    #     # Кеширование объекта Vip
+    #     if cached_vip_list is None:
+    #         cached_vip_list = []
+    #     cached_vip_list.append(data)
+    #     cache.set(cache_key, cached_vip_list)
+
+    #     print(' Нету детального в кеше ')
+    #     return response.Response(data)
+    
+    def retrieve(self,request, *args, **kwargs):
+        vip_id = self.kwargs.get('pk')
+        cache_key = f'vip_list_{vip_id}'
+        
+        cached_vip = cache.get(cache_key)
+        if cached_vip:
+            print(cached_vip)
+            return response.Response(cached_vip)
+
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        data = serializer.data
+
+        cache.set(cache_key, data)
+        print(' нету детального в кеше ')
+        return response.Response(data)
+    
 
 
 
