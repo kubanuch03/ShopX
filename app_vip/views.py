@@ -33,7 +33,6 @@ class VipCreateApiView(generics.CreateAPIView):
     serializer_class = VipCreateSerializer
 
     def create(self, request, *args, **kwargs):
-        vip_id = request.data.get('id')  # Получаем идентификатор из запроса
         product_id = request.data.get('product') 
         
         vip_exists = Vip.objects.filter(product__id=product_id).exists()

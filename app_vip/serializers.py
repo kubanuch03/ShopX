@@ -13,6 +13,13 @@ class VipCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vip
         fields = ['id',"product",'icon']
+    
+    # def create(self, validated_data):
+    #     product_id = validated_data['product']
+    #     if Vip.objects.filter(product=product_id).exists():
+    #         raise serializers.ValidationError({"dublicate":"уже существует"})
+    #     return super().create(validated_data)
+        
 
 
 class VipListSerializer(serializers.ModelSerializer):
