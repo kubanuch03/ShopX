@@ -1,6 +1,7 @@
 from django.db import models
 from product.models import Product
 from django.utils import timezone
+from django.core.cache import cache
 
 
 
@@ -11,7 +12,7 @@ class Vip(models.Model):
     created_at = models.DateField(auto_now=True)
 
     def __str__(self):
-        return f'product {self.product}'
+        return f'vip_id: {self.id}'
     
     class Meta:
         indexes = [

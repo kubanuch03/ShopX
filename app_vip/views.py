@@ -12,23 +12,22 @@ from random import shuffle
 
 
 class VipListApiView(generics.ListAPIView):
-    queryset = Vip.objects.all()
     serializer_class = VipListSerializer
 
     def get_queryset(self):
-        # Cache key
         cache_key = 'vip_list'
-        # Cache timeout
         cache_ttl = getattr(settings, 'CACHE_TTL', 15)
 
-        # Check if the cache exists
         cached_queryset = cache.get(cache_key)
-        if cached_queryset:
+        
+
+        if cached_queryset is not None:  
+            print('Кеш найден!')
             return cached_queryset
 
-        # If cache does not exist, fetch from database
-        queryset = Vip.objects.all().order_by('-id')
+        queryset = list(Vip.objects.all().order_by('-id'))  
         cache.set(cache_key, queryset, timeout=cache_ttl)
+        print('кеш не найден')
         return queryset
 
 

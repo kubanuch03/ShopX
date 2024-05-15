@@ -205,13 +205,12 @@ CHANNEL_LAYERS = {
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        # 'LOCATION': ['redis://localhost:6379/1'],
         'LOCATION': ['redis://localhost:6379/1'],
 
         
     }
 }
-CACHE_TTL = 15
+CACHE_TTL = 30
 # EMAIL_CONFIG
 EMAIL_BACKEND = config("EMAIL_BACKEND")
 EMAIL_HOST = config("EMAIL_HOST")
