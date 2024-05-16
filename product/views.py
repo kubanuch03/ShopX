@@ -42,19 +42,7 @@ class ProductListApiView(ListAPIView):
     def HistorySearch(self):
         pass
 
-    # def get_queryset(self):
-    #     # Пытаемся получить результат из кеша
-    #     cached_queryset = cache.get('cached_product_queryset')
-    #     if cached_queryset is not None:
-    #         return cached_queryset
 
-    #     # Если результат не найден в кеше, выполняем запрос к базе данных
-    #     queryset = self._get_queryset_from_database()
-
-    #     # Кешируем результат на 1 час
-    #     cache.set('cached_product_queryset', queryset, timeout=10)
-
-    #     return queryset
 
     def _get_queryset_from_database(self):
         # Получаем список товаров с аннотацией средней оценки и количества отзывов
