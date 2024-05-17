@@ -52,7 +52,7 @@ class IsSellerorAdmin(BasePermission):
             try:
                 seller_profile = SellerProfile.objects.get(
                     email_or_phone=request.user)
-                if seller_profile.is_seller or seller_profile.is_seller:
+                if seller_profile.is_seller:
                     return True
                 
              
