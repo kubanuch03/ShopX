@@ -20,11 +20,13 @@ class IsSellerorAdmin(BasePermission):
     def has_permission(self, request, view):
         if request.user.is_authenticated:
             try:
-                seller_profile = SellerProfile.objects.get(email_or_phone=request.user)
+                seller_profile = SellerProfile.objects.get(
+                    email_or_phone=request.user)
                 if seller_profile.is_seller or request.user.is_staff:
                     return True
             except SellerProfile.DoesNotExist:
-                pass
+                raise PermissionDenied(f"Seller account does not exist for account:{str(request.user)}")
+            raise PermissionDenied(f"Permission denied for user.")
         raise PermissionDenied("Only admin or seller users can create product.")
 
     def has_object_permission(self, request, view, obj):
