@@ -35,8 +35,10 @@ class IsSellerorAdmin(BasePermission):
                 
             except SellerProfile.DoesNotExist:
                 raise PermissionDenied(f"Seller account does not exist for account:{str(request.user)}")
-            raise PermissionDenied(f"Permission denied for user.")
-        raise PermissionDenied("Only admin or seller users can create product.")
+            except User.DoesNotExist:
+                raise PermissionDenied({"permissions":"no permission"})
+            raise PermissionDenied({"permissions":"Permission denied for user."})
+        raise PermissionDenied({"permissions":"Only admin or seller users can create product."})
 
     def has_object_permission(self, request, view, obj):
         return (obj.user.is_seller)
