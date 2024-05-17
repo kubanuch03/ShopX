@@ -1,13 +1,11 @@
 from rest_framework.viewsets import generics
 from rest_framework import response
 from django.db import transaction
-from django.db.models.functions import Random
 from django.core.cache import cache
 from django.conf import settings
 from .models import Vip
 from .serializers import VipCreateSerializer, VipListSerializer
 
-from random import shuffle
 
 
 
@@ -17,15 +15,12 @@ class VipListApiView(generics.ListAPIView):
     def get_queryset(self):
         cache_key = 'vip_list'
         cache_ttl = getattr(settings, 'CACHE_TTL', 60)
-
         cached_queryset = cache.get(cache_key)
-        
-
         if cached_queryset is not None:  
             print(cached_queryset)
             return cached_queryset
 
-        queryset = list(Vip.objects.all().order_by('-id'))  
+        queryset = list(Vip.objects.prefetch_related('product').order_by('-id'))  
         cache.set(cache_key, queryset, timeout=cache_ttl)
         print('кеш не найден')
         return queryset
