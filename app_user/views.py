@@ -95,6 +95,11 @@ class UserLoginView(generics.CreateAPIView):
         
         refresh = RefreshToken.for_user(user=user)
         access_token = refresh.access_token
+
+        user.auth_token_refresh = str(refresh)
+        user.auth_token_access = str(access_token)
+        user.save()
+        
         return Response({
             'detail': 'Successfully confirmed your code',
             'id': user.id,

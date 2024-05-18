@@ -24,7 +24,7 @@ from .permissions import IsSellerorAdmin
 class ProductCreateApiView(CreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [IsSellerorAdmin,permissions.IsAdminUser] 
+    permission_classes = [IsSellerorAdmin]
     
    
 
