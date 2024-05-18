@@ -18,13 +18,13 @@ from django.core.cache import cache
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 
-from .permissions import IsSellerorAdmin
+from .permissions import IsSellerOrAdmin
 
 
 class ProductCreateApiView(CreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [IsSellerorAdmin]
+    # permission_classes = [IsSellerOrAdmin]
     
    
 

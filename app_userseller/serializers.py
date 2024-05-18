@@ -48,10 +48,13 @@ class SellerRegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop('password_confirm')
-        user = SellerProfile.objects.create_user(**validated_data)
-        user.is_seller = True
-        user.save()
-        return user
+        try:
+            user = SellerProfile.objects.create_user(**validated_data)
+            user.is_seller = True
+            user.save()
+            return user
+        except:
+            raise serializers.ValidationError({"dublicate":"user exists!"})
     
 
 class BecomeSellerSerializer(serializers.Serializer):

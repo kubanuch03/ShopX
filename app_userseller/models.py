@@ -9,7 +9,8 @@ from .usermanager import CustomUserManager
 
 class SellerProfile(BaseUser,AbstractBaseUser, PermissionsMixin):
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='seller_profile',blank=True,null=True)
+    # user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='seller_profile',blank=True,null=True)
+    is_seller = models.BooleanField(default=False)
     
     shop_name = models.CharField(max_length=255)
     instagram_link = models.URLField(null=True, blank=True)

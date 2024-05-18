@@ -97,12 +97,11 @@ class ProductSerializer(serializers.ModelSerializer):
         price = validated_data['price']
         discount = validated_data['discount']
 
-        user_id = self.context['request'].user.id
-        user_name = self.context['request'].user
-        print(user_name, user_id)
-        seller_profile = SellerProfile.objects.get(id=user_id)
+        email = self.context['request'].user
+        print(email)
         
-        validated_data['user'] = seller_profile
+        validated_data['user'] = email
+        
         # else:
         #     raise serializers.ValidationError({"error":"У пользователя не достаточно прав"})
         if price <= 0 or discount <=0:

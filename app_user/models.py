@@ -8,6 +8,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 class User(BaseUser,AbstractBaseUser, PermissionsMixin):
     
     address = models.CharField(max_length=255,null=True,blank=True)
+    is_usual = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return f"{self.username}"
