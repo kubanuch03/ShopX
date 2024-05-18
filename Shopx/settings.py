@@ -175,6 +175,7 @@ MEDIA_ROOT = "media/"
 AUTH_USER_MODEL = 'app_userseller.SellerProfile'
 
 REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'product.exceptions.unauthorized_exception_handler',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
