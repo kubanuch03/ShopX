@@ -9,7 +9,7 @@ from django.conf import settings
 from asgiref.sync import sync_to_async
 
 from .models import SupportServiceRoom, SupportServiceMessage
-from app_user.models import CustomUser
+from app_user.models import User
 
 
 class SupportChatConsumer(AsyncWebsocketConsumer):
@@ -66,8 +66,8 @@ class SupportChatConsumer(AsyncWebsocketConsumer):
 
 # ======== Комната ====================================================================================================
     async def get_or_create_support_room(self, room_name,sender_username, recipient_username):
-        sender = await sync_to_async(CustomUser.objects.filter(username=sender_username).first)()
-        recipient = await sync_to_async(CustomUser.objects.filter(username=recipient_username).first)()
+        sender = await sync_to_async(User.objects.filter(username=sender_username).first)()
+        recipient = await sync_to_async(User.objects.filter(username=recipient_username).first)()
         try:
             room = await database_sync_to_async(SupportServiceRoom.objects.get)(name=room_name)
             print(f"Комната нашлась {room}")
@@ -131,7 +131,7 @@ class SupportChatConsumer(AsyncWebsocketConsumer):
     #Сохранение сообщений
     async def save_message(self, username, support_room, message):
         try:
-            user = await sync_to_async(CustomUser.objects.get)(username=username)
+            user = await sync_to_async(User.objects.get)(username=username)
             support_room = await sync_to_async(SupportServiceRoom.objects.get)(slug=support_room)
             await sync_to_async(SupportServiceMessage.objects.create)(user=user, support_room=support_room, content=message)
             print(f"Сохраняем сообщение")
@@ -152,7 +152,7 @@ class SupportChatConsumer(AsyncWebsocketConsumer):
             decoded_token = decode(token, settings.SECRET_KEY, algorithms=["HS256"])
             user_id = decoded_token.get('user_id')
             if user_id:
-                user = await sync_to_async(CustomUser.objects.get)(id=user_id)
+                user = await sync_to_async(User.objects.get)(id=user_id)
                 print(f"В комнату зашел пользователь {user}")
                 return user
         except InvalidTokenError as e:
