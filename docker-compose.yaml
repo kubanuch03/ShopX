@@ -8,8 +8,8 @@ services:
     command: bash entrypoint.sh
     volumes:
       - .:/app
-      - static_volume/usr/src/app/static
-      - media_volume/usr/src/app/media
+      - static_volume:/usr/src/app/static
+      - media_volume:/usr/src/app/media
 
 
     ports:
