@@ -1,46 +1,70 @@
 from rest_framework import generics, permissions, response, status
 from rest_framework.views import APIView
 from rest_framework.generics import get_object_or_404
-from django.views.decorators.cache import cache_page
-from django.utils.decorators import method_decorator
-
-
 from.models import Baner
 from .serializers import BanerSerializer
 
-# User Permissions
+from rest_framework import status
+from django.core.cache import cache
+
+
+
+CACHE_KEY = 'baner_list'
+CACHE_TIMEOUT = 60 * 15
+
+
 class BanerListView(APIView):
     def get(self, request):
-        queryset = Baner.objects.all()
-        serializer = BanerSerializer(queryset, many=True)
-        return response.Response(serializer.data)
-    
-    @method_decorator(cache_page(10))
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+        data = cache.get(CACHE_KEY)
+        
+        if not data:
+            queryset = Baner.objects.all()
+            serializer = BanerSerializer(queryset, many=True)
+            data = serializer.data
+            cache.set(CACHE_KEY, data, timeout=CACHE_TIMEOUT)
+        
+        return response.Response(data)
 
 
 
-class BanerDetailView(generics.RetrieveAPIView):
-    queryset = Baner.objects.all()
-    serializer_class = BanerSerializer
-    permission_classes = [permissions.AllowAny]
+class BanerCreateView(APIView):
+    def post(self, request):
+        serializer = BanerSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            
+            queryset = Baner.objects.all()
+            serializer = BanerSerializer(queryset, many=True)
+            data = serializer.data
+            cache.set(CACHE_KEY, data, timeout=CACHE_TIMEOUT)
 
-    def get_object(self):
-        baner_id = self.kwargs.get('pk')
-        return get_object_or_404(self.queryset, pk=baner_id)
+            return response.Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 
 # Admin Permissions
 
 
-
-class BanerCreateView(generics.CreateAPIView):
-    queryset = Baner.objects.all()
+class BanerDetailView(generics.RetrieveAPIView):
     serializer_class = BanerSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.AllowAny]
 
+    def get_object(self):
+        baner_id = self.kwargs.get('pk')
+
+        cache_key = f'baner_{baner_id}'
+        baner = cache.get(cache_key)
+
+        if not baner:
+            queryset = Baner.objects.filter(pk=baner_id)
+            baner = get_object_or_404(queryset, pk=baner_id)
+            cache.set(cache_key, baner, timeout=60 * 15)
+
+        return baner
 
 
 class BanerUpdateView(generics.UpdateAPIView):
@@ -64,3 +88,19 @@ class BanerDeleteView(generics.DestroyAPIView):
         instance = get_object_or_404(self.queryset, pk=baner_id)
         self.perform_destroy(instance)
         return response.Response({"success": f"Банер id: {baner_id} успешно удалена!"}, status=status.HTTP_200_OK)
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
