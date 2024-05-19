@@ -22,7 +22,7 @@ class Size(models.Model):
 
 class Product(models.Model):
     category = models.ForeignKey(
-        Category, related_name="products", on_delete=models.CASCADE
+        Category, related_name="products", on_delete=models.SET_NULL,null=True
     )
     podcategory = models.ForeignKey(
         PodCategory, related_name="pod_products", on_delete=models.CASCADE
