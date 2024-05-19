@@ -8,8 +8,8 @@ services:
     command: bash entrypoint.sh
     volumes:
       - .:/app
-      - static_volume:/static
-      - media_volume:/media
+      - static_volume:/usr/src/app/static/
+      - media_volume:/usr/src/app/media
 
 
     ports:
@@ -72,8 +72,8 @@ services:
      ports:
        - "80:80"
      volumes:
-      - static_volume:/static
-      - media_volume:/media
+      - static_volume:/usr/src/app/static/
+      - media_volume:/usr/src/app/media/
      depends_on:
        - web
 
