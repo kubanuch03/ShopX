@@ -18,10 +18,10 @@ urlpatterns = [
 
 
 #     path('refresh-token/', TokenRefreshView.as_view()),
-    path('send-code-to-email/', SellerSendCodeView.as_view(), name='send_password_reset_code'), # отправить code в почту
+    path('send-code-to-email/', SellerSendCodeView.as_view(), name='seller-send_password_reset_code'), # отправить code в почту
 
-    path('forget-password/reset/',ForgetPasswordView.as_view(), name='reset_password'), # забыл пароль при входе
-    path('reset-password-profile/', UserResetPasswordView.as_view(), name='reset_password'), # менять пароль в профиле
+    path('forget-password/reset/',ForgetPasswordView.as_view(), name='seller-reset_password'), # забыл пароль при входе
+    path('reset-password-profile/', UserResetPasswordView.as_view(), name='seller-reset_password'), # менять пароль в профиле
 
 
 #     path('profiles/', ListProfileApi.as_view(), name=''),
@@ -39,9 +39,9 @@ urlpatterns = [
 #     path('seller-profile/<int:id>/', DetailUserProfileApi.as_view(), name=''),
     path('seller/profile/update/<int:pk>/', SellerUpdateProfileShopApi.as_view(), name='seller-profile-update'),
 
-    path('logout/seller/', LogoutView.as_view(), name='user logout'),
+    path('logout/seller/', LogoutView.as_view(), name='seller-logout'),
 
-    path('change/password/seller/', ChangePasswordAPIVIew.as_view()),
+    path('change/password/seller/', ChangePasswordAPIVIew.as_view(),name='seller-change-password'),
 
 #     path('market/', MarketListAPIView.as_view(), name=''),
 #     path('logout/', LogoutView.as_view(), name='logout'),

@@ -18,6 +18,7 @@ class SellerRegisterSerializer(serializers.ModelSerializer):
         model = SellerProfile
         fields = ['email_or_phone','password','password_confirm','shop_name',
                   ]
+        ref_name = "SellerRegister"
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password_confirm']:
@@ -58,10 +59,12 @@ class SellerRegisterSerializer(serializers.ModelSerializer):
     
 
 class BecomeSellerSerializer(serializers.Serializer):
+    
+    class Meta:
+        model = SellerProfile
+        fields = []
 
-
-    def create(self, validated_data):
-        return SellerProfile.objects.create(**validated_data)
+   
 
     
 class VerifyCodeSerializer(serializers.ModelSerializer):
@@ -99,13 +102,13 @@ class ChangePasswordSerializer(serializers.Serializer):
 
     class Meta:
         fields = ['new_password', 'confirming_new_password']    
-
+        ref_name = "SellerChangePassword"
 
     
-    class Meta:
-        fields = ['old_password',
-                  'new_password',
-                  'confirm_new_password',]
+    # class Meta:
+    #     fields = ['old_password',
+    #               'new_password',
+    #               'confirm_new_password',]
 
 class SendCodeSerializer(serializers.ModelSerializer):
     
@@ -122,7 +125,7 @@ class ForgetPasswordSerializer(serializers.Serializer):
 
     class Meta:
         fields = ['password','confirm_password','code']
-
+        ref_name = "SellerForgetPassword" 
 
 
 # class UserProfileSerializer(serializers.ModelSerializer):
@@ -153,6 +156,9 @@ class SellerProfileSerializer(serializers.ModelSerializer):
                   'tiktok_link',
                   'facebook_link',
                   ]
+        ref_name = "SellerProfile"
+
+
 class SellerProfileDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -166,12 +172,12 @@ class SellerProfileDetailSerializer(serializers.ModelSerializer):
                   'shop_name',
                   'is_active',
                   'is_seller',
-                  'is_official_shop',
+                #   'is_official_shop',
                   'image',
-                  'category_sc',
-                  'address',
-                  'location_latitude',
-                  'location_longitude',
+                #   'category_sc',
+                #   'address',
+                #   'location_latitude',
+                #   'location_longitude',
 
                   'instagram_link',
                   'whatsapp_link',
@@ -179,7 +185,7 @@ class SellerProfileDetailSerializer(serializers.ModelSerializer):
                   'facebook_link',
                   ]  
 
-
+        ref_name = "SellerProfileDetail"
 
 
 

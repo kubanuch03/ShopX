@@ -57,8 +57,8 @@ class SellerRegisterView(CreateUserApiView):
 # апи для того чтобы сттать продавцом 
 class BecomeSellerView(generics.CreateAPIView):
     
-    # permission_classes = [permissions.IsAuthenticated]
-    # serializer_class = BecomeSellerSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = BecomeSellerSerializer
     
     
     def post(self, request, *args, **kwargs):
