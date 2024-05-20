@@ -181,7 +181,7 @@ class UserResetPasswordView(generics.UpdateAPIView):
             return Response({"success": "Password changed successfully."})
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            
+                     
 # # если user забыл пароль при входе
 class ForgetPasswordView(generics.UpdateAPIView):
     serializer_class = ForgetPasswordSerializer
