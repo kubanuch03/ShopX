@@ -79,8 +79,28 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = (
-            'id', 'category', 'podcategory','size', 'name', 'slug', 'image1','image2','image3','image4', 'description', 'price', 'location', 'rating',
-            'available', 'created', 'updated', 'likes', 'discount','mid_ocenka','count_recall','discounted_price'
+            'id',
+            'category',
+            'podcategory',
+            'size',
+            'name',
+            'slug',
+            'image1',
+            'image2',
+            'image3',
+            'image4',
+            'description',
+            'price',
+            'location',
+            'rating',
+            'available',
+            'created',
+            'updated',
+            'likes',
+            'discount',
+            'mid_ocenka',
+            'count_recall',
+            'discounted_price'
         )
         read_only_fields = ('id', 'slug', 'created', 'updated','mid_ocenka',)
 
@@ -130,17 +150,15 @@ class ProductSerializer(serializers.ModelSerializer):
         return count_recall
 
 
-    
-    
-
-
 class RecallSerializer(serializers.ModelSerializer):
-    user= UserRecallSerializer(read_only=True)
+    user = UserRecallSerializer(read_only=True)
     class Meta:
         model = Recall
         fields = '__all__'
-        extra_kwargs = {'user': {'read_only': True, }, 'created': {'read_only': True, },
-                        'updated': {'read_only': True, },
+        extra_kwargs = {
+            'user': {'read_only': True, },
+            'created': {'read_only': True, },
+            'updated': {'read_only': True, },
                         }
 
     def to_representation(self, instance):
@@ -153,5 +171,8 @@ class RecallSerializer(serializers.ModelSerializer):
 class RecallImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecallImages
-        fields = ['id','images']
+        fields = [
+            'id',
+            'images'
+        ]
 
