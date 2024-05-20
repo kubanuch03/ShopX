@@ -51,7 +51,6 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             return None
 
     def get_mid_ocenka(self, instance):
-        # Вычисляем среднюю оценку товара
         recalls = instance.recall_set.all()
         if recalls.exists():
             total_rating = sum(recall.rating for recall in recalls)
