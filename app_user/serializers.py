@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import User
 from product.serializers import Product
-from Category.serializers import CategorySerializer, PodCategorySerializer
+from Category.serializers import CategorySerializer
 from django.core.exceptions import ValidationError
 import re
 

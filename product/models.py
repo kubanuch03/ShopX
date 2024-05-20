@@ -2,7 +2,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from app_user.models import User
 from app_userseller.models import SellerProfile
-from Category.models import Category, PodCategory
+from Category.models import Category
 import re
 from django.core.exceptions import ValidationError
 
@@ -24,9 +24,9 @@ class Product(models.Model):
     category = models.ForeignKey(
         Category, related_name="products", on_delete=models.SET_NULL,null=True
     )
-    podcategory = models.ForeignKey(
-        PodCategory, related_name="pod_products", on_delete=models.CASCADE
-    )
+    # podcategory = models.ForeignKey(
+    #     PodCategory, related_name="pod_products", on_delete=models.CASCADE
+    # )
     user = models.ForeignKey(SellerProfile,related_name='products', on_delete=models.CASCADE,limit_choices_to={'is_seller': True})
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
