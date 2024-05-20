@@ -2,9 +2,6 @@ from django.contrib import admin
 from .models import *
 
 
-
-
-
 class PriceFilter(admin.SimpleListFilter):
     title = "Price Range"
     parameter_name = "price"

@@ -6,6 +6,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 
 from django.db.models import Avg, Count, Q
 from django_filters.rest_framework import DjangoFilterBackend
+from django.core.cache import cache
 
 from .serializers import *
 from .models import Product, Recall, RecallImages ,Like, Size
@@ -39,34 +40,27 @@ class ProductListApiView(ListAPIView):
     search_fields = ["name", "description"]
     ordering_fields = ["name", "price"]
 
-    def HistorySearch(self):
-        pass
 
-    # def get_queryset(self):
-    #     # Пытаемся получить результат из кеша
-    #     cached_queryset = cache.get('cached_product_queryset')
-    #     if cached_queryset is not None:
-    #         return cached_queryset
+    def get_queryset(self):
+        cached_queryset = cache.get('products_list')
+        if cached_queryset:
+            return cached_queryset
 
-    #     # Если результат не найден в кеше, выполняем запрос к базе данных
-    #     queryset = self._get_queryset_from_database()
+        queryset = self._get_queryset_from_database()
+        cache.set('products_list', queryset, timeout=60)  # кеш на 60 секунд
 
-    #     # Кешируем результат на 1 час
-    #     cache.set('cached_product_queryset', queryset, timeout=10)
-
-    #     return queryset
+        return queryset
 
     def _get_queryset_from_database(self):
         # Получаем список товаров с аннотацией средней оценки и количества отзывов
         queryset = Product.objects.annotate(
             average_rating=Avg('recall__rating'),
             num_reviews=Count('recall')
-        )
-        queryset = queryset.order_by('-average_rating')
+        ).order_by('-average_rating', '-num_reviews')
 
-        # Дополнительно сортируем товары по количеству отзывов (от большего к меньшему)
-        queryset = queryset.order_by('-num_reviews')
-
+        # queryset = queryset.order_by('-average_rating')
+        # # Дополнительно сортируем товары по количеству отзывов (от большего к меньшему)
+        # queryset = queryset.order_by('-num_reviews')
         return queryset
 
 
@@ -75,6 +69,9 @@ class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all().annotate(rating=Avg("recall__rating"), likes=Count('like'))
     serializer_class = ProductDetailSerializer
     # permission_classes = [IsSeller, ]
+
+    def get_queryset(self):
+        return Product.objects.filter(user=self.request.user)
 
     def perform_update(self, serializer):
         instance = serializer.instance
