@@ -20,10 +20,10 @@ class Category(models.Model):
 
     def __str__(self):
         full_path = [self.name]
-        k = self.parent
-        while k is not None:
-            full_path.append(k.name)
-            k = k.parent
+        parent_category = self.parent
+        while parent_category is not None:
+            full_path.append(parent_category.name)
+            parent_category = parent_category.parent
         return ' > '.join(full_path[::-1])
 
     @staticmethod
