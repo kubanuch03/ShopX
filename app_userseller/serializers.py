@@ -4,20 +4,26 @@ from app_user.models import User
 from product.serializers import Product
 from Category.serializers import CategorySerializer, PodCategorySerializer
 from django.core.exceptions import ValidationError
-from .validators import validate_password_strength
+from .validators import (
+    validate_password_strength,
+    validate_email_domain
+)
 
-    
-    
+
 class SellerRegisterSerializer(serializers.ModelSerializer):
-    email_or_phone = serializers.EmailField(required=True)
+    email_or_phone = serializers.EmailField(required=True, validators=[validate_email_domain])
     password = serializers.CharField(required=True,write_only=True)
     password_confirm = serializers.CharField(required=True,write_only=True)
     shop_name= serializers.CharField(required=False)
     
     class Meta:
         model = SellerProfile
-        fields = ['email_or_phone','password','password_confirm','shop_name',
-                  ]
+        fields = [
+            'email_or_phone',
+            'password',
+            'password_confirm',
+            'shop_name',
+        ]
         ref_name = "SellerRegister"
 
     def validate(self, attrs):
