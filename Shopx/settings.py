@@ -45,14 +45,12 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # lib
     'channels',
-    "twilio",
     "rest_framework",
     "rest_framework_simplejwt",
     "drf_spectacular",
     "corsheaders",
     "django_filters",
     "drf_yasg",
-    "djoser",
     'notification',
     # app
     "Category",
@@ -61,6 +59,7 @@ INSTALLED_APPS = [
     "app_chat",
     "app_vip",
     "app_user",
+    "app_userbase",
     "app_userseller",
     "app_baner",
 ]
@@ -173,7 +172,7 @@ MEDIA_ROOT = "/usr/src/app/media"
 #DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-AUTH_USER_MODEL = 'app_user.CustomUser'
+AUTH_USER_MODEL = 'app_userseller.SellerProfile'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -187,8 +186,8 @@ REST_FRAMEWORK = {
 
 from datetime import timedelta
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=365),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=365),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=3),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "AUTH_HEADER_TYPES": ("JWT",),
 }
 
@@ -203,6 +202,17 @@ CHANNEL_LAYERS = {
     },
 }
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': ['redis://redis:6379/1'],
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+        
+    }
+}
+CACHE_TTL = 30
 # EMAIL_CONFIG
 EMAIL_BACKEND = config("EMAIL_BACKEND")
 EMAIL_HOST = config("EMAIL_HOST")

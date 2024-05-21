@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser
+from .models import User
 from product.serializers import Product
 from Category.serializers import CategorySerializer, PodCategorySerializer
 from django.core.exceptions import ValidationError
@@ -8,11 +8,12 @@ import re
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
+    email_or_phone = serializers.EmailField(required=True)
     password_confirm = serializers.CharField(required=True)
     password = serializers.CharField(required=True,write_only=True)
     username = serializers.CharField(required=True)
     class Meta:
-        model = CustomUser
+        model = User
         fields = ['email_or_phone','username','password','password_confirm']
 
     # def validate_email_or_phone(self, value):
@@ -46,17 +47,29 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop('password_confirm')
-        user = CustomUser.objects.create_user(**validated_data)
-        return user
+        try:
+            user = User.objects.create_user(**validated_data)
+            return user
+        except:
+            raise serializers.ValidationError({"dublicate":"user exists!"})
         
     
 
+class BecomeUserSerializer(serializers.Serializer):
+
+
+    def create(self, validated_data):
+        # Проверяем, если флажок is_usual установлен в True, создаем объект класса User
+        if validated_data.get('is_usual', False):
+            return User.objects.create(**validated_data)
+        # Если флажок is_usual установлен в False или не передан, создаем объект SellerProfile
+        return User.objects.create(**validated_data)
 
 class VerifyCodeSerializer(serializers.ModelSerializer):
     
     class Meta:
         ref_name = "UserVerify" 
-        model = CustomUser
+        model = User
         fields = ['code']
 
 
@@ -66,7 +79,7 @@ class LoginSerializer(serializers.ModelSerializer):
     
     class Meta:
         ref_name = "UserLogin" 
-        model = CustomUser
+        model = User
         fields = ['email_or_phone','password']
     
     def validate(self, attrs):
@@ -79,21 +92,19 @@ class LoginSerializer(serializers.ModelSerializer):
         return attrs
 
 
-class ChangePasswordSerializer(serializers.Serializer):
-    old_password = serializers.CharField(write_only=True)
+class ChangePasswordSerializer(serializers.Serializer): 
     new_password = serializers.CharField(write_only=True)
     confirm_new_password = serializers.CharField(write_only=True)
     
     class Meta:
-        fields = ['old_password',
-                  'new_password',
+        fields = ['new_password',
                   'confirm_new_password',]
 
 class SendCodeSerializer(serializers.ModelSerializer):
     
     class Meta:
         ref_name = "UserCode" 
-        model = CustomUser
+        model = User
         fields = ['email_or_phone']
 
 
@@ -109,14 +120,14 @@ class ForgetPasswordSerializer(serializers.Serializer):
 
 class UserListSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CustomUser
+        model = User
         fields = ["__all__"]
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = CustomUser
+        model = User
 
         fields = [
                 'id',
@@ -129,7 +140,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class UserRecallSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = CustomUser
+        model = User
 
         fields = [
                 'id',

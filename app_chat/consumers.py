@@ -9,7 +9,7 @@ from django.conf import settings
 from asgiref.sync import sync_to_async
 
 from .models import Room, Message
-from app_user.models import CustomUser
+from app_user.models import User
 
 class ChatConsumer(AsyncWebsocketConsumer):
 
@@ -75,8 +75,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
     async def get_room_by_slug(self,room_name,sender_username, recipient_username):
-        sender = await sync_to_async(CustomUser.objects.filter(username=sender_username).first)()
-        recipient = await sync_to_async(CustomUser.objects.filter(username=recipient_username).first)()
+        sender = await sync_to_async(User.objects.filter(username=sender_username).first)()
+        recipient = await sync_to_async(User.objects.filter(username=recipient_username).first)()
         try:
             room = await database_sync_to_async(Room.objects.get)(name=room_name)
             print(f"get_room_by_slug Комната нашлась {room}")
@@ -143,7 +143,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     #Сохранение сообщений
     async def save_message(self, username, room, message):
         try:
-            user = await sync_to_async(CustomUser.objects.get)(username=username)
+            user = await sync_to_async(User.objects.get)(username=username)
             room = await sync_to_async(Room.objects.get)(slug=room)
             await sync_to_async(Message.objects.create)(user=user, room=room, content=message)
             print(f"Сохраняем сообщение")
@@ -156,7 +156,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         try:
             
             room = await sync_to_async(Room.objects.get)(name=room_name)
-            sender = await sync_to_async(CustomUser.objects.get)(username=sender_username)
+            sender = await sync_to_async(User.objects.get)(username=sender_username)
             # Устанавливаем флаг is_deleted только для текущего пользователя
             if sender.id == room.user2_id:
                 room.is_deleted_user2 = True
@@ -192,7 +192,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             decoded_token = decode(token, settings.SECRET_KEY, algorithms=["HS256"])
             user_id = decoded_token.get('user_id')
             if user_id:
-                user = await sync_to_async(CustomUser.objects.get)(id=user_id)
+                user = await sync_to_async(User.objects.get)(id=user_id)
                 print(f"В комнату зашел пользователь {user}")
                 return user
         except InvalidTokenError as e:
