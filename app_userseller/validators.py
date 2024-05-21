@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+import re
 
 def validate_password_strength(value):
     common_passwords = [
@@ -28,3 +29,15 @@ def validate_password_strength(value):
             ("This password is too simple."),
             code='password_too_simple',
         )
+
+
+def validate_email_domain(value):
+    if not re.match(r"[^@]+@[^@]+\.[^@]+", value):
+        raise ValidationError("Введите правильный адрес электронной почты")
+    domain = value.split('@')[1]
+    allowed_domains = [
+        'gmail.com',
+        'mail.ru'
+    ]
+    if domain not in allowed_domains:
+        raise ValidationError("Электронная почта должна быть с доменом @gmail.com или @mail.ru")
