@@ -1,16 +1,17 @@
 from rest_framework import serializers
 from .models import SellerProfile
-from app_user.models import User
-from product.serializers import Product
-from Category.serializers import CategorySerializer, PodCategorySerializer
 from django.core.exceptions import ValidationError
 from .validators import validate_password_strength
 
     
-    
 class SellerRegisterSerializer(serializers.ModelSerializer):
     email_or_phone = serializers.EmailField(required=True)
-    password = serializers.CharField(required=True,write_only=True)
+    password = serializers.CharField(required=True,write_only=True,
+                                     help_text="The password must consist of Latin letters (both lowercase and uppercase)"
+                                               "and digits without the use of special characters. The password should also be at"
+                                               "least 8 characters long and should not contain common combinations such"
+                                               "as '123456' or 'password'."
+                                     )
     password_confirm = serializers.CharField(required=True,write_only=True)
     shop_name= serializers.CharField(required=False)
     
@@ -26,26 +27,13 @@ class SellerRegisterSerializer(serializers.ModelSerializer):
         
         if ' ' in attrs['email_or_phone']:
             raise ValidationError("Не должно быть пробелов!")
-        
-        
-        
-        
-        
-        # if email_or_phone:
-        #     if '@' in email_or_phone:
-        #         attrs['email'] = email_or_phone
-        #     else:
-        #         raise serializers.ValidationError("only email")
-                # try:
-                #     phone_number = email_or_phone  # Замените на вашу собственную логику проверки номера телефона
-                #     attrs['phone_number'] = phone_number
-                # except ValidationError:
-                #     raise serializers.ValidationError("Неверный формат номера телефона")
         password = attrs.get('password')
-        validate_password_strength(password) 
+        try:
+            validate_password_strength(password)
+        except ValidationError as e:
+            error_messages = e.messages + [self.fields['password'].help_text]
+            raise serializers.ValidationError({'password': error_messages})
         return attrs
-    
-    
 
     def create(self, validated_data):
         validated_data.pop('password_confirm')
