@@ -1,4 +1,6 @@
+import re
 from django.core.exceptions import ValidationError
+
 
 def validate_password_strength(value):
     common_passwords = [
@@ -27,4 +29,10 @@ def validate_password_strength(value):
         raise ValidationError(
             ("This password is too simple."),
             code='password_too_simple',
+        )
+
+    if not re.match(r'^[A-Za-z0-9]*$', value):
+        raise ValidationError(
+            "Пароль должен содержать только латинские буквы и цифры.",
+            code='password_non_latin',
         )
