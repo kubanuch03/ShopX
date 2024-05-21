@@ -6,13 +6,7 @@ from rest_framework.views import APIView
 from rest_framework import generics
 from .services import *
 from .serializers import *
-from .models import CustomUser as User
-from drf_spectacular.utils import extend_schema
-from drf_yasg.utils import swagger_auto_schema
-from django.contrib.auth import logout
-from django.core.cache import cache
 
-from drf_spectacular.utils import extend_schema_view, extend_schema
 
 #===================================================================================================================================================================================
 
@@ -41,13 +35,13 @@ class ForgetPasswordSendCodeView(generics.UpdateAPIView):
             return Response({"required": "email_or_phone"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            user = CustomUser.objects.get(email_or_phone=email_or_phone)
+            user = User.objects.get(email_or_phone=email_or_phone)
             # Если пользователь уже существует, просто обновите его код подтверждения и отправьте его
             send_verification_code(email_or_phone=email_or_phone)
             return Response({"success":"Код был отправлен на почту/телефон"}, status=status.HTTP_200_OK)
-        except CustomUser.DoesNotExist:
+        except User.DoesNotExist:
             # Если пользователь не существует, создайте нового пользователя и отправьте ему код подтверждения
-            user = CustomUser.objects.create(email_or_phone=email_or_phone)
+            user = User.objects.create(email_or_phone=email_or_phone)
             send_verification_code(email_or_phone=email_or_phone)
             return Response({"success":"Код был отправлен на почту/телефон"}, status=status.HTTP_201_CREATED)
 
@@ -71,18 +65,18 @@ class ForgetPasswordView(generics.UpdateAPIView):
 # ==== User =============================================================================================================================================================
 
 class UserListView(generics.ListAPIView):
-    queryset = CustomUser.objects.filter(is_superuser=False)
+    queryset = User.objects.filter(is_superuser=False)
     serializer_class = UserRegisterSerializer
 
 
 # апи для регистрации
 class UserRegisterView(CreateUserApiView):
-    queryset = CustomUser.objects.all()
+    queryset = User.objects.all()
     serializer_class = UserRegisterSerializer
 
 # апи для логина
 class UserLoginView(generics.CreateAPIView):
-    queryset = CustomUser.objects.all()
+    queryset = User.objects.all()
     serializer_class = LoginSerializer
 
     def post(self, request, *args, **kwargs):
@@ -92,8 +86,8 @@ class UserLoginView(generics.CreateAPIView):
         if not email_or_phone or not password:
             return Response({'error':'Both email/phone and password are required'}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            user = CustomUser.objects.get(email_or_phone=email_or_phone)
-        except CustomUser.DoesNotExist:
+            user = User.objects.get(email_or_phone=email_or_phone)
+        except User.DoesNotExist:
             return Response({'error':'The user does not exist'})
         if not check_password(password, user.password):
             return Response({'error':'Incorrect password'}, status=status.HTTP_400_BAD_REQUEST)
@@ -101,6 +95,11 @@ class UserLoginView(generics.CreateAPIView):
         
         refresh = RefreshToken.for_user(user=user)
         access_token = refresh.access_token
+
+        user.auth_token_refresh = str(refresh)
+        user.auth_token_access = str(access_token)
+        user.save()
+        
         return Response({
             'detail': 'Successfully confirmed your code',
             'id': user.id,
@@ -111,6 +110,8 @@ class UserLoginView(generics.CreateAPIView):
             'refresh_lifetime_days': refresh.lifetime.days,
             'access_lifetime_seconds': access_token.lifetime.total_seconds()
         })
+
+
 
 
 # апи который проверяет код который был отправлен на указанный email и в ответ передает токен
@@ -131,20 +132,46 @@ class UserVerifyRegisterCode(generics.UpdateAPIView):
 class UserInfoApiView(APIView):
     def get(self, request, *args, **kwargs):
         user = self.request.user
-        queryset = CustomUser.objects.filter(id=user.id).first()
+        queryset = User.objects.filter(id=user.id).first()
         serializer = UserProfileSerializer(queryset)
         return Response(serializer.data)
     
 
 
 class UserUpdateApiView(generics.RetrieveUpdateAPIView):
-    queryset = CustomUser.objects.all() 
+    queryset = User.objects.all() 
     serializer_class = UserProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+
+
+
+
+from rest_framework.generics import GenericAPIView
+from rest_framework.mixins import UpdateModelMixin
+from django.contrib.auth.hashers import make_password
+from django.utils.crypto import constant_time_compare
+
+
+class ChangePasswordUserAPIVIew(UpdateModelMixin, GenericAPIView):
+    serializer_class = ChangePasswordSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
     def get_object(self):
-        return self.request.user
+        user = User.objects.get(id=self.request.user.id)
+        return user
 
-
-
+    def patch(self, *args, **kwargs):
+        serializer = self.get_serializer(data=self.request.data)
+        if serializer.is_valid():
+            new_password = self.request.data.get('new_password')
+            confirming_new_password = self.request.data.get('confirming_new_password')
+            if constant_time_compare(new_password, confirming_new_password):
+                user = self.get_object()
+                user.password = make_password(confirming_new_password)
+                user.save()
+                return Response({'Вы ушпешно поменяли свой пароль'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'Пароли не совподают'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors)
 

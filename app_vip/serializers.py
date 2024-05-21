@@ -13,6 +13,9 @@ class VipCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vip
         fields = ['id',"product",'icon']
+    
+        
+        
 
 
 class VipListSerializer(serializers.ModelSerializer):

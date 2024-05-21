@@ -17,7 +17,7 @@ schema_view = get_schema_view(
    ),
    public=True,
    permission_classes=(permissions.AllowAny,),
-   url='http://3.123.17.71/',
+   # url='http://3.123.17.71/',
 )
 
 urlpatterns = [

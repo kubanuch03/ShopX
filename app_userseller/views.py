@@ -4,9 +4,13 @@ from rest_framework import permissions
 
 from .services import *
 from .serializers import *
-from .models import CustomUser as User
+from .models import SellerProfile
+# from app_user.models import User
+# from app_userbase.models import BaseUser
+
 from django.db.models import Q
 from rest_framework.views import APIView
+from app_user.models import User  
 
 # #===================================================================================================================================================================================
 # class LogoutView(APIView):
@@ -53,17 +57,28 @@ class SellerRegisterView(CreateUserApiView):
 # апи для того чтобы сттать продавцом 
 class BecomeSellerView(generics.CreateAPIView):
     
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = BecomeSellerSerializer
     
     
     def post(self, request, *args, **kwargs):
-        user = request.user
-        news_seller = SellerProfile.objects.create(
-            user=user,
-            is_seller=True
-        )
-        return Response({'success':f"Вы успешно стали продавцом"}, status=status.HTTP_200_OK)
+        user_id = request.user.id
+        user = User.objects.get(id=user_id)
+    
+            # Обновляем поле is_seller пользователя на True
+        try:
+            seller = SellerProfile.objects.get(id=user_id)
+            if seller:
+                return Response({"dublicate":"Такой продавец существует"},status=status.HTTP_400_BAD_REQUEST)
+        except:
+            new_seller = SellerProfile.objects.create(
+                user=user,
+                is_seller = True
+                
+            )
+        
+        return Response({'success': 'Вы успешно стали продавцом'}, status=status.HTTP_200_OK)
+       
     
 # # апи для логина
 class SellerLoginView(generics.CreateAPIView):
@@ -77,7 +92,7 @@ class SellerLoginView(generics.CreateAPIView):
         if not email_or_phone or not password:
             return Response({'error':'Both email/phone and password are required'}, status=status.HTTP_400_BAD_REQUEST)
         
-        user = SellerProfile.objects.filter(Q(email=email_or_phone) | Q(phone_number=email_or_phone)).first()
+        user = SellerProfile.objects.filter(Q(email_or_phone=email_or_phone)).first()
 
         if not user:
             return Response({'error': 'The user does not exist'}, status=status.HTTP_404_NOT_FOUND)
@@ -88,6 +103,11 @@ class SellerLoginView(generics.CreateAPIView):
         
         refresh = RefreshToken.for_user(user=user)
         access_token = refresh.access_token
+
+        user.auth_token_refresh = str(refresh)
+        user.auth_token_access = str(access_token)
+        user.save()
+        
         return Response({
             'detail': 'Successfully confirmed your code',
             'id': user.id,
@@ -161,7 +181,7 @@ class UserResetPasswordView(generics.UpdateAPIView):
             return Response({"success": "Password changed successfully."})
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            
+                     
 # # если user забыл пароль при входе
 class ForgetPasswordView(generics.UpdateAPIView):
     serializer_class = ForgetPasswordSerializer
@@ -183,6 +203,9 @@ class SellerListApiview(generics.ListAPIView):
     queryset = SellerProfile.objects.all()
     serializer_class = SellerProfileSerializer
     permission_classes = [permissions.IsAdminUser,]
+
+    def get_queryset(self):
+        seller  = self.request.user.id
 
 
 class SellerDetailApiview(generics.RetrieveAPIView):
@@ -223,14 +246,41 @@ class LogoutView(APIView):
 # # === Profile =========================================================================================================================================================
 
 
-class SellerUpdateProfileShopApi(generics.UpdateAPIView):
+class SellerUpdateProfileShopApi(generics.RetrieveUpdateAPIView):
     queryset = SellerProfile.objects.all()
     serializer_class = SellerProfileSerializer
     http_method_names = ['patch',]
-    permission_classes = [permissions.IsAuthenticated,]
+    # permission_classes = [permissions.IsAuthenticated,]
     lookup_field = 'pk'
 
 
+from rest_framework.generics import GenericAPIView
+from rest_framework.mixins import UpdateModelMixin
+from django.contrib.auth.hashers import make_password
+from django.utils.crypto import constant_time_compare
+
+
+class ChangePasswordAPIVIew(UpdateModelMixin, GenericAPIView):
+    serializer_class = ChangePasswordSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        user = SellerProfile.objects.get(id=self.request.user.id)
+        return user
+
+    def patch(self, *args, **kwargs):
+        serializer = self.get_serializer(data=self.request.data)
+        if serializer.is_valid():
+            new_password = self.request.data.get('new_password')
+            confirming_new_password = self.request.data.get('confirming_new_password')
+            if constant_time_compare(new_password, confirming_new_password):
+                user = self.get_object()
+                user.password = make_password(confirming_new_password)
+                user.save()
+                return Response({'Вы ушпешно поменяли свой пароль'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'Пароли не совподают'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors)
 
 
 

@@ -42,7 +42,7 @@ urlpatterns = [
     path('user/', include("app_user.urls")),
     path('seller/', include("app_userseller.urls")),
     path('baner/', include("app_baner.urls")),
-    path('vip/', include("app_vip.urls"))
+    path('vip/', include("app_vip.urls")),
 
 
     
@@ -54,4 +54,6 @@ urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
 

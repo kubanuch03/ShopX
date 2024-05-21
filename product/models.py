@@ -1,6 +1,6 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from app_user.models import CustomUser
+from app_user.models import User
 from app_userseller.models import SellerProfile
 from Category.models import Category, PodCategory
 import re
@@ -22,7 +22,7 @@ class Size(models.Model):
 
 class Product(models.Model):
     category = models.ForeignKey(
-        Category, related_name="products", on_delete=models.CASCADE
+        Category, related_name="products", on_delete=models.SET_NULL,null=True
     )
     podcategory = models.ForeignKey(
         PodCategory, related_name="pod_products", on_delete=models.CASCADE
@@ -71,7 +71,7 @@ class Product(models.Model):
 
 
 class Recall(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     text = models.TextField()
@@ -90,7 +90,7 @@ class RecallImages(models.Model):
     
 
 class Like(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
     def __str__(self):

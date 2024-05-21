@@ -24,8 +24,9 @@ def send_verification_code(email_or_phone):
     verification_code = generate_verification_code()
 
     subject = 'Verification Code'
-    message = f'Your verification code is: {verification_code}'
+    message = f'Your verification code is: {verification_code}\n\n'
     sender_email = 'kubanuch03@gmail.com'
+
     recipient_email = email_or_phone
 
     try:
@@ -135,12 +136,14 @@ class ChangePasswordOnReset:
         new_password = serializer.validated_data.get('password')
         confirm_password = serializer.validated_data.get('confirm_password')
 
-        if new_password != confirm_password:
-            return Response({"success":"Пароли не совпадают"}, status=status.HTTP_400_BAD_REQUEST)
-        
         check_code_result = CheckCode.check_code(code)
         if 'error' in check_code_result:
             return Response(check_code_result['error'], status=status.HTTP_400_BAD_REQUEST)
+            
+        if new_password != confirm_password:
+            return Response({"success":"Пароли не совпадают"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        
 
 
 

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import SellerProfile
+from app_user.models import User
 from product.serializers import Product
 from Category.serializers import CategorySerializer, PodCategorySerializer
 from django.core.exceptions import ValidationError
@@ -15,8 +16,9 @@ class SellerRegisterSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = SellerProfile
-        fields = ['email_or_phone','password','password_confirm','shop_name','location_latitude',
-                  'location_longitude',]
+        fields = ['email_or_phone','password','password_confirm','shop_name',
+                  ]
+        ref_name = "SellerRegister"
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password_confirm']:
@@ -28,12 +30,12 @@ class SellerRegisterSerializer(serializers.ModelSerializer):
         
         
         
-        email_or_phone = attrs.get('email_or_phone')
-        if email_or_phone:
-            if '@' in email_or_phone:
-                attrs['email'] = email_or_phone
-            else:
-                raise serializers.ValidationError("only email")
+        
+        # if email_or_phone:
+        #     if '@' in email_or_phone:
+        #         attrs['email'] = email_or_phone
+        #     else:
+        #         raise serializers.ValidationError("only email")
                 # try:
                 #     phone_number = email_or_phone  # Замените на вашу собственную логику проверки номера телефона
                 #     attrs['phone_number'] = phone_number
@@ -47,17 +49,23 @@ class SellerRegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop('password_confirm')
-        user = SellerProfile.objects.create_user(**validated_data)
-        user.is_seller = True
-        user.save()
-        return user
+        try:
+            user = SellerProfile.objects.create_user(**validated_data)
+            user.is_seller = True
+            user.save()
+            return user
+        except:
+            raise serializers.ValidationError({"dublicate":"user exists!"})
     
 
 class BecomeSellerSerializer(serializers.Serializer):
+    
+    class Meta:
+        model = SellerProfile
+        fields = []
 
+   
 
-    def create(self, validated_data):
-        return SellerProfile.objects.create(**validated_data)
     
 class VerifyCodeSerializer(serializers.ModelSerializer):
     
@@ -86,15 +94,21 @@ class LoginSerializer(serializers.ModelSerializer):
         return attrs
 
 
+
+
 class ChangePasswordSerializer(serializers.Serializer):
-    old_password = serializers.CharField(write_only=True)
-    new_password = serializers.CharField(write_only=True)
-    confirm_new_password = serializers.CharField(write_only=True)
-    
+    new_password = serializers.CharField(max_length=30)
+    confirming_new_password = serializers.CharField(max_length=30)
+
     class Meta:
-        fields = ['old_password',
-                  'new_password',
-                  'confirm_new_password',]
+        fields = ['new_password', 'confirming_new_password']    
+        ref_name = "SellerChangePassword"
+
+    
+    # class Meta:
+    #     fields = ['old_password',
+    #               'new_password',
+    #               'confirm_new_password',]
 
 class SendCodeSerializer(serializers.ModelSerializer):
     
@@ -111,7 +125,7 @@ class ForgetPasswordSerializer(serializers.Serializer):
 
     class Meta:
         fields = ['password','confirm_password','code']
-
+        ref_name = "SellerForgetPassword" 
 
 
 # class UserProfileSerializer(serializers.ModelSerializer):
@@ -132,20 +146,19 @@ class SellerProfileSerializer(serializers.ModelSerializer):
         fields = [
                 #   'number',
                   'shop_name',
-                  'address',
-                  'location_latitude',
-                  'location_longitude',
+                #   'address',
+                #   'location_latitude',
+                #   'location_longitude',
                   'email_or_phone',
-                  'category_sc',
-                  'is_official_shop',
-                  'is_active',
-                  'is_seller',
+                #   'category_sc',
                   'instagram_link',
                   'whatsapp_link',
                   'tiktok_link',
                   'facebook_link',
-                  "kuba loh"
                   ]
+        ref_name = "SellerProfile"
+
+
 class SellerProfileDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -159,12 +172,12 @@ class SellerProfileDetailSerializer(serializers.ModelSerializer):
                   'shop_name',
                   'is_active',
                   'is_seller',
-                  'is_official_shop',
+                #   'is_official_shop',
                   'image',
-                  'category_sc',
-                  'address',
-                  'location_latitude',
-                  'location_longitude',
+                #   'category_sc',
+                #   'address',
+                #   'location_latitude',
+                #   'location_longitude',
 
                   'instagram_link',
                   'whatsapp_link',
@@ -172,7 +185,7 @@ class SellerProfileDetailSerializer(serializers.ModelSerializer):
                   'facebook_link',
                   ]  
 
-
+        ref_name = "SellerProfileDetail"
 
 
 

@@ -3,6 +3,9 @@ from .models import Product, Recall, RecallImages, Size
 from app_user.serializers import  UserRecallSerializer
 from app_vip.models import Vip
 import re
+from app_user.serializers import UserProfileSerializer, UserRecallSerializer
+
+from app_userseller.models import SellerProfile
 
 
 class SizeSerializer(serializers.ModelSerializer):
@@ -76,7 +79,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = (
-            'id', 'category', 'podcategory', 'user','size', 'name', 'slug', 'image1','image2','image3','image4', 'description', 'price', 'location', 'rating',
+            'id', 'category', 'podcategory','size', 'name', 'slug', 'image1','image2','image3','image4', 'description', 'price', 'location', 'rating',
             'available', 'created', 'updated', 'likes', 'discount','mid_ocenka','count_recall','discounted_price'
         )
         read_only_fields = ('id', 'slug', 'created', 'updated','mid_ocenka',)
@@ -93,6 +96,14 @@ class ProductSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         price = validated_data['price']
         discount = validated_data['discount']
+
+        email = self.context['request'].user
+        print(email)
+        
+        validated_data['user'] = email
+        
+        # else:
+        #     raise serializers.ValidationError({"error":"У пользователя не достаточно прав"})
         if price <= 0 or discount <=0:
             raise serializers.ValidationError({"price or discount": "Price or Discount must be a positive integer."})
         
@@ -117,6 +128,8 @@ class ProductSerializer(serializers.ModelSerializer):
         recalls = instance.recall_set.all()
         count_recall = recalls.count()
         return count_recall
+
+
     
     
 
