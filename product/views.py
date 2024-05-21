@@ -12,11 +12,13 @@ from .models import Product, Recall, RecallImages ,Like, Size
 from .filters import CustomFilter
 from datetime import datetime
 from rest_framework import permissions
-from .tasks import send_push_notification_recall
-# from Shopx.settings import REDIS_TIMEOUT
 from django.core.cache import cache
-from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
+from Category.models import Category
+
+
+CACHE_KEY = "product_list"
+CACHE_TIMEOUT = 60 * 15
+
 
 from .permissions import IsSellerOrAdmin
 
@@ -25,10 +27,17 @@ class ProductCreateApiView(CreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     # permission_classes = [IsSellerOrAdmin]
+    # permission_classes = [IsSellerorAdmin]
     
+
+    def perform_create(self, serializer):
+        product = serializer.save()
+        queryset = Product.objects.all().annotate(
+            rating=Avg("recall__rating"), 
+            likes=Count('like')
+        )
+        cache.set(CACHE_KEY, queryset, timeout=CACHE_TIMEOUT)
    
-
-
 
 
 class ProductListApiView(ListAPIView):
@@ -39,47 +48,68 @@ class ProductListApiView(ListAPIView):
     search_fields = ["name", "description"]
     ordering_fields = ["name", "price"]
 
-    def HistorySearch(self):
-        pass
-
-    # def get_queryset(self):
-    #     # Пытаемся получить результат из кеша
-    #     cached_queryset = cache.get('cached_product_queryset')
-    #     if cached_queryset is not None:
-    #         return cached_queryset
-
-    #     # Если результат не найден в кеше, выполняем запрос к базе данных
-    #     queryset = self._get_queryset_from_database()
-
-    #     # Кешируем результат на 1 час
-    #     cache.set('cached_product_queryset', queryset, timeout=10)
-
-    #     return queryset
+    def get_queryset(self):
+        queryset = cache.get(CACHE_KEY)
+        if queryset is None:
+            queryset = Product.objects.all().annotate(
+                rating=Avg("recall__rating"), 
+                likes=Count('like')
+            )
+            cache.set(CACHE_KEY, queryset, timeout=CACHE_TIMEOUT)
+        return queryset
 
     def _get_queryset_from_database(self):
-        # Получаем список товаров с аннотацией средней оценки и количества отзывов
         queryset = Product.objects.annotate(
             average_rating=Avg('recall__rating'),
             num_reviews=Count('recall')
-        )
+            )
         queryset = queryset.order_by('-average_rating')
-
-        # Дополнительно сортируем товары по количеству отзывов (от большего к меньшему)
         queryset = queryset.order_by('-num_reviews')
-
         return queryset
 
 
-# Представление для получения деталей, обновления и удаления продукта
 class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all().annotate(rating=Avg("recall__rating"), likes=Count('like'))
     serializer_class = ProductDetailSerializer
     # permission_classes = [IsSeller, ]
 
+    def get_object(self):
+        product_id = self.kwargs.get('pk')
+        cache_key = f'product_{product_id}'
+        product_data = cache.get(cache_key)
+
+        if not product_data:
+            queryset = Product.objects.annotate(
+                rating=Avg("recall__rating"),
+                likes=Count('like')
+            )
+            product = generics.get_object_or_404(queryset, pk=product_id)
+            serializer = self.get_serializer(product)
+            product_data = serializer.data
+            cache.set(cache_key, product_data, 60 * 15)
+        else:
+            product = generics.get_object_or_404(Product, pk=product_id)
+        return product
+
     def perform_update(self, serializer):
         instance = serializer.instance
-        instance.price = serializer.apply_discount_to_price(instance.price, serializer.validated_data.get('discount', 0))
+        category_id = serializer.validated_data.get('category')
+        if category_id:
+            category = generics.get_object_or_404(Category, id=category_id)
+            instance.category = category
+        discount = serializer.validated_data.get('discount', 0)
+        instance.price = self.apply_discount_to_price(instance.price, discount)
         instance.save()
+        product_id = self.kwargs.get('pk')
+        cache_key = f'product_{product_id}'
+        serializer = self.get_serializer(instance)
+        product_data = serializer.data
+        cache.set(cache_key, product_data, 60 * 15)
+
+    def apply_discount_to_price(self, price, discount):
+        if discount:
+            return price * (1 - discount / 100)
+        return price
 
 
 # Представление для получения деталей, обновления и удаления продукта

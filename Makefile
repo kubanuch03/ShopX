@@ -11,8 +11,10 @@ migrate:
 	python manage.py makemigrations notification
 	python manage.py makemigrations product
 	python manage.py makemigrations app_user
-	python manage.py makemigrations user_profiles
+	python manage.py makemigrations app_userbase
+	python manage.py makemigrations app_userseller
 	python manage.py makemigrations app_baner
+	python manage.py makemigrations app_vip
 	python manage.py migrate
  
 createsuperuser:
