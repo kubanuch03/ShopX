@@ -9,4 +9,5 @@ class CustomFilter(filters.FilterSet):
 
     class Meta:
         model = Product
-        fields = ["category", "podcategory", "user", "price", "available", "created", ]
+        # fields = ["category", "podcategory", "user", "price", "available", "created", ]
+        fields = ["category", "user", "price", "available", "created", ]
