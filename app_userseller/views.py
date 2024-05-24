@@ -55,10 +55,10 @@ class SellerRegisterView(CreateUserApiView):
 
 
 # апи для того чтобы сттать продавцом 
-class BecomeSellerView(generics.CreateAPIView):
+class BecomeSellerView(generics.CreateAPIView):  #fix bug
     
-    # permission_classes = [permissions.IsAuthenticated]
-    # serializer_class = BecomeSellerSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = BecomeSellerSerializer
     
     
     def post(self, request, *args, **kwargs):
@@ -156,45 +156,67 @@ class SellerSendCodeView(generics.UpdateAPIView):
             return Response({"success":"Код был отправлен на почту/телефон"}, status=status.HTTP_201_CREATED)
         
 # # апи менят пароль в профиле 
-class UserResetPasswordView(generics.UpdateAPIView):
-    serializer_class = ChangePasswordSerializer
-    permission_classes = [permissions.IsAuthenticated]
+# class UserResetPasswordView(generics.UpdateAPIView):
+#     serializer_class = ChangePasswordSerializer
+#     permission_classes = [permissions.IsAuthenticated]
 
-    http_method_names = ['patch',]
-    def get_object(self):
-        return self.request.user
+#     http_method_names = ['patch',]
+#     def get_object(self):
+#         return self.request.user
 
-    def update(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        serializer = self.get_serializer(data=request.data)
+#     def update(self, request, *args, **kwargs):
+#         self.object = self.get_object()
+#         serializer = self.get_serializer(data=request.data)
 
-        if serializer.is_valid():
-            old_password = serializer.validated_data.get('old_password')
-            new_password = serializer.validated_data.get('new_password')
+#         if serializer.is_valid():
+#             old_password = serializer.validated_data.get('old_password')
+#             new_password = serializer.validated_data.get('new_password')
 
-            if not self.object.check_password(old_password):
+#             if not self.object.check_password(old_password):
                 
-                return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+#                 return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
 
-            self.object.set_password(new_password)
-            self.object.save()
-            return Response({"success": "Password changed successfully."})
+#             self.object.set_password(new_password)
+#             self.object.save()
+#             return Response({"success": "Password changed successfully."})
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
 # # если user забыл пароль при входе
-class ForgetPasswordView(generics.UpdateAPIView):
+class CodeCheckingView(generics.UpdateAPIView):
     serializer_class = ForgetPasswordSerializer
 
     http_method_names = ['patch',]
     def update(self, request, *args, **kwargs):
         
-        result = ChangePasswordOnReset.change_password_on_reset(self=self,request=request)
+        result = CodeChecking.code_checking(self=self,request=request)
 
         if result == "success":
-            return Response({"success ":"Пароль успешно изменен"}, status=status.HTTP_200_OK)
+            return Response({"success ":"good code"}, status=status.HTTP_200_OK)
         else:
             return Response(result, status=status.HTTP_400_BAD_REQUEST)
+        
+
+
+# class ResetPasswordView(GenericAPIView, UpdateModelMixin):
+#     serializer_class = ChangePasswordSerializer
+
+
+#     def patch(self, *args, **kwargs):
+#         serializer = self.get_serializer(data=self.request.data)
+#         if serializer.is_valid():
+#             new_password = self.request.data.get('new_password')
+#             confirming_new_password = self.request.data.get('confirming_new_password')
+#             if constant_time_compare(new_password, confirming_new_password):
+#                 user = self.get_object()
+#                 user.password = make_password(confirming_new_password)
+#                 user.save()
+#                 return Response({'Вы ушпешно поменяли свой пароль'}, status=status.HTTP_200_OK)
+#             else:
+#                 return Response({'Пароли не совподают'}, status=status.HTTP_400_BAD_REQUEST)
+#         return Response(serializer.errors)
+
+
 #===  ===========================================================================================================================================
 
 

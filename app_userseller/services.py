@@ -126,18 +126,18 @@ class CheckCode():
                 return Response({"error":"Пользователь не найден"})
 
 
-class ChangePasswordOnReset:
+class CodeChecking:
 
-    def change_password_on_reset(self,request):
+    def code_checking(self,request):
         # user = request.user
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         code = serializer.validated_data.get('code')
-        new_password = serializer.validated_data.get('password')
-        confirm_password = serializer.validated_data.get('confirm_password')
+        # new_password = serializer.validated_data.get('password')
+        # confirm_password = serializer.validated_data.get('confirm_password')
 
-        if new_password != confirm_password:
-            return Response({"success":"Пароли не совпадают"}, status=status.HTTP_400_BAD_REQUEST)
+        # if new_password != confirm_password:
+            # return Response({"success":"Пароли не совпадают"}, status=status.HTTP_400_BAD_REQUEST)
         
         check_code_result = CheckCode.check_code(code)
         if 'error' in check_code_result:
@@ -146,9 +146,15 @@ class ChangePasswordOnReset:
 
 
         user = SellerProfile.objects.get(code=code)
-        user.set_password(new_password)
+        # user.set_password(new_password)
         user.save()
-        return {"success":"change password"}
+        return {"success":"верный код"}
+    
+
+
+
+
+
 
 
 
