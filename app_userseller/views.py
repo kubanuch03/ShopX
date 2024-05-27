@@ -228,12 +228,13 @@ class SellerListApiview(generics.ListAPIView):
 
     def get_queryset(self):
         seller  = self.request.user.id
+        return seller
 
 
 class SellerDetailApiview(generics.RetrieveAPIView):
     queryset = SellerProfile.objects.all()
     serializer_class = SellerProfileDetailSerializer
-    permission_classes = [permissions.IsAdminUser,]
+    # permission_classes = [permissions.IsAdminUser,]
 
 
 
