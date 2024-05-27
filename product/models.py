@@ -27,22 +27,26 @@ class Product(models.Model):
     podcategory = models.ForeignKey(
         PodCategory, related_name="pod_products", on_delete=models.CASCADE
     )
-    user = models.ForeignKey(SellerProfile,related_name='products', on_delete=models.CASCADE,limit_choices_to={'is_seller': True})
-    name = models.CharField(max_length=200)
-    description = models.TextField(blank=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    discount = models.PositiveIntegerField(blank=True, null=True)
-    discounted_price = models.PositiveBigIntegerField(blank=True,null=True)
+    user = models.ForeignKey(SellerProfile,related_name='products', on_delete=models.CASCADE,limit_choices_to={'is_seller': True})#
+    name = models.CharField(max_length=200) #
+    description = models.TextField(blank=True) 
+    price = models.DecimalField(max_digits=10, decimal_places=2)#
+    discount = models.PositiveIntegerField(blank=True, null=True)#  #delete
+    discounted_price = models.PositiveBigIntegerField(blank=True,null=True)#
     size = models.ManyToManyField(Size)
     slug = models.SlugField(max_length=200)
-    image1 = models.ImageField(upload_to="products/%Y/%m/%d", blank=True, null=True)
+    image1 = models.ImageField(upload_to="products/%Y/%m/%d", blank=True, null=True)#
     image2 = models.ImageField(upload_to="products/%Y/%m/%d", blank=True, null=True)
     image3 = models.ImageField(upload_to="products/%Y/%m/%d", blank=True, null=True)
     image4 = models.ImageField(upload_to="products/%Y/%m/%d", blank=True, null=True)
     available = models.BooleanField(default=True)
     location = models.CharField(max_length=100, blank=True)
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)#
+    updated = models.DateTimeField(auto_now=True)#
+
+    # процент скидки
+    # 
+    #
 
 
     class Meta:

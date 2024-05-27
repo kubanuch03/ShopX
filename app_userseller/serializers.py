@@ -126,12 +126,13 @@ class SendCodeSerializer(serializers.ModelSerializer):
 
 class ForgetPasswordSerializer(serializers.Serializer):
     code = serializers.CharField(max_length=6,write_only=True)
-    password = serializers.CharField(max_length=20,write_only=True)
-    confirm_password = serializers.CharField(max_length=20,write_only=True)
+    # password = serializers.CharField(max_length=20,write_only=True)
+    # confirm_password = serializers.CharField(max_length=20,write_only=True)
 
     class Meta:
-        fields = ['password','confirm_password','code']
-        ref_name = "SellerForgetPassword" 
+        fields = [#'password','confirm_password',
+            'code']
+
 
 
 # class UserProfileSerializer(serializers.ModelSerializer):

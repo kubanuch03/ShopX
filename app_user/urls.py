@@ -16,7 +16,7 @@ urlpatterns = [
     path('send-code-to-email/', forget_password.user_forget_password_send_view, name='send_password_reset_code'), # отправить code в почту
     path('forget-password/reset/',forget_password.user_forget_password_reset_view, name='reset_password'), # забыл пароль при входе
 
-        path('change/password/seller/', ChangePasswordUserAPIVIew.as_view()),
+        path('change/password/', ChangePasswordUserAPIVIew.as_view()),
 
     
     

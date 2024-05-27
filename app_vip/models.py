@@ -8,7 +8,7 @@ from django.core.cache import cache
 
 class Vip(models.Model):
     icon = models.ImageField(upload_to='vip/', null=False, blank=False)
-    product = models.ManyToManyField(Product)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     created_at = models.DateField(auto_now=True)
 
     def __str__(self):
