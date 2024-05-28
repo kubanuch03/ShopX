@@ -156,31 +156,32 @@ class SellerSendCodeView(generics.UpdateAPIView):
             return Response({"success":"Код был отправлен на почту/телефон"}, status=status.HTTP_201_CREATED)
         
 # # апи менят пароль в профиле 
-# class UserResetPasswordView(generics.UpdateAPIView):
-#     serializer_class = ChangePasswordSerializer
-#     permission_classes = [permissions.IsAuthenticated]
+class UserResetPasswordView(generics.UpdateAPIView):
+    serializer_class = ChangePasswordSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-#     http_method_names = ['patch',]
-#     def get_object(self):
-#         return self.request.user
+    http_method_names = ['patch',]
+    def get_object(self):
+        return self.request.user
 
-#     def update(self, request, *args, **kwargs):
-#         self.object = self.get_object()
-#         serializer = self.get_serializer(data=request.data)
+    def update(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        serializer = self.get_serializer(data=request.data)
 
-#         if serializer.is_valid():
-#             old_password = serializer.validated_data.get('old_password')
-#             new_password = serializer.validated_data.get('new_password')
+        if serializer.is_valid():
+            old_password = serializer.validated_data.get('old_password')
+            new_password = serializer.validated_data.get('new_password')
 
-#             if not self.object.check_password(old_password):
+            if not self.object.check_password(old_password):
                 
-#                 return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
 
-#             self.object.set_password(new_password)
-#             self.object.save()
-#             return Response({"success": "Password changed successfully."})
+            self.object.set_password(new_password)
+            self.object.save()
+            return Response({"success": "Password changed successfully."})
 
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                     
             
 # # если user забыл пароль при входе
 class CodeCheckingView(generics.UpdateAPIView):

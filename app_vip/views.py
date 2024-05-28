@@ -10,6 +10,7 @@ from .serializers import VipCreateSerializer, VipListSerializer
 
 
 class VipListApiView(generics.ListAPIView):
+    # queryset = Vip.objects.all()
     serializer_class = VipListSerializer
 
     def get_queryset(self):

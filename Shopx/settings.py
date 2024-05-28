@@ -160,10 +160,10 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 STATIC_URL = "/static/"
-STATIC_ROOT = "static/"
+STATIC_ROOT = "/usr/src/app/static"
 
 MEDIA_URL = "/media/"
-MEDIA_ROOT = "media/"
+MEDIA_ROOT = "/usr/src/app/media"
 
 
 CACHES = {
@@ -197,8 +197,8 @@ REST_FRAMEWORK = {
 
 from datetime import timedelta
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=365),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=365),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=3),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "AUTH_HEADER_TYPES": ("JWT",),
 }
 
@@ -217,7 +217,6 @@ CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
         'LOCATION': ['redis://redis:6379/1'],
-
         
     }
 }

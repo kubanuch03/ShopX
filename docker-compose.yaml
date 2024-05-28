@@ -8,8 +8,8 @@ services:
     command: bash entrypoint.sh
     volumes:
       - .:/app
-      - static_volume:/static
-      - media_volume:/media
+      - static_volume:/usr/src/app/static
+      - media_volume:/usr/src/app/media
 
 
     ports:
@@ -70,10 +70,10 @@ services:
        context: .
        dockerfile: nginx/Dockerfile
      ports:
-       - "81:81"
+       - "80:80"
      volumes:
-      - static_volume:/static
-      - media_volume:/media
+      - static_volume:/usr/src/app/static
+      - media_volume:/usr/src/app/media
      depends_on:
        - web
 

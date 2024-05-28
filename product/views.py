@@ -20,11 +20,13 @@ CACHE_KEY = "product_list"
 CACHE_TIMEOUT = 60 * 15
 
 
+from .permissions import IsSellerOrAdmin
 
 
 class ProductCreateApiView(CreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    # permission_classes = [IsSellerOrAdmin]
     # permission_classes = [IsSellerorAdmin]
     
 

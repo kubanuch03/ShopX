@@ -4,20 +4,27 @@ from app_user.models import User
 from product.serializers import Product
 from Category.serializers import CategorySerializer, PodCategorySerializer
 from django.core.exceptions import ValidationError
-from .validators import validate_password_strength
+from .validators import (
+    validate_password_strength,
+    validate_email_domain
+)
 
-    
-    
+
 class SellerRegisterSerializer(serializers.ModelSerializer):
-    email_or_phone = serializers.EmailField(required=True)
+    email_or_phone = serializers.EmailField(required=True, validators=[validate_email_domain])
     password = serializers.CharField(required=True,write_only=True)
     password_confirm = serializers.CharField(required=True,write_only=True)
     shop_name= serializers.CharField(required=False)
     
     class Meta:
         model = SellerProfile
-        fields = ['email_or_phone','password','password_confirm','shop_name',
-                  ]
+        fields = [
+            'email_or_phone',
+            'password',
+            'password_confirm',
+            'shop_name',
+        ]
+        ref_name = "SellerRegister"
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password_confirm']:
@@ -48,17 +55,22 @@ class SellerRegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop('password_confirm')
-        user = SellerProfile.objects.create_user(**validated_data)
-        user.is_seller = True
-        user.save()
-        return user
+        try:
+            user = SellerProfile.objects.create_user(**validated_data)
+            user.is_seller = True
+            user.save()
+            return user
+        except:
+            raise serializers.ValidationError({"dublicate":"user exists!"})
     
 
 class BecomeSellerSerializer(serializers.Serializer):
+    
+    class Meta:
+        model = SellerProfile
+        fields = []
 
-
-    def create(self, validated_data):
-        return SellerProfile.objects.create(**validated_data)
+   
 
     
 class VerifyCodeSerializer(serializers.ModelSerializer):
@@ -74,7 +86,7 @@ class LoginSerializer(serializers.ModelSerializer):
     email_or_phone = serializers.CharField(required=True)
     
     class Meta:
-        ref_name = "SellerLogin" 
+        ref_name = "SellerLogin"
         model = SellerProfile
         fields = ['email_or_phone','password']
     
@@ -96,13 +108,13 @@ class ChangePasswordSerializer(serializers.Serializer):
 
     class Meta:
         fields = ['new_password', 'confirming_new_password']    
-
+        ref_name = "SellerChangePassword"
 
     
-    class Meta:
-        fields = ['old_password',
-                  'new_password',
-                  'confirm_new_password',]
+    # class Meta:
+    #     fields = ['old_password',
+    #               'new_password',
+    #               'confirm_new_password',]
 
 class SendCodeSerializer(serializers.ModelSerializer):
     
@@ -151,6 +163,9 @@ class SellerProfileSerializer(serializers.ModelSerializer):
                   'tiktok_link',
                   'facebook_link',
                   ]
+        ref_name = "SellerProfile"
+
+
 class SellerProfileDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -164,12 +179,12 @@ class SellerProfileDetailSerializer(serializers.ModelSerializer):
                   'shop_name',
                   'is_active',
                   'is_seller',
-                  'is_official_shop',
+                #   'is_official_shop',
                   'image',
-                  'category_sc',
-                  'address',
-                  'location_latitude',
-                  'location_longitude',
+                #   'category_sc',
+                #   'address',
+                #   'location_latitude',
+                #   'location_longitude',
 
                   'instagram_link',
                   'whatsapp_link',
@@ -177,7 +192,7 @@ class SellerProfileDetailSerializer(serializers.ModelSerializer):
                   'facebook_link',
                   ]  
 
-
+        ref_name = "SellerProfileDetail"
 
 
 

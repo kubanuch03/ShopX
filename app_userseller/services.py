@@ -133,15 +133,18 @@ class CodeChecking:
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         code = serializer.validated_data.get('code')
-        # new_password = serializer.validated_data.get('password')
-        # confirm_password = serializer.validated_data.get('confirm_password')
+        new_password = serializer.validated_data.get('password')
+        confirm_password = serializer.validated_data.get('confirm_password')
 
-        # if new_password != confirm_password:
-            # return Response({"success":"Пароли не совпадают"}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         check_code_result = CheckCode.check_code(code)
         if 'error' in check_code_result:
             return Response(check_code_result['error'], status=status.HTTP_400_BAD_REQUEST)
+            
+        if new_password != confirm_password:
+            return Response({"success":"Пароли не совпадают"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        
 
 
 
