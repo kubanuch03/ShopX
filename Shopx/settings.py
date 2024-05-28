@@ -216,7 +216,7 @@ CHANNEL_LAYERS = {
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': ['redis://localhost:6379/1'],
+        'LOCATION': ['redis://redis:6379/1'],
 
         
     }
@@ -248,13 +248,13 @@ CORS_ALLOW_METHODS = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://3.71.90.73",
+    "http://3.21.129.120",
     "http://localhost:5173",
     "http://localhost:3000",
 ]
 
 CORS_ALLOW_ORIGINS = [
-    "http://3.71.90.73",
+    "http://3.21.129.120",
     "http://localhost:5173",
     "http://localhost:3000",
 ]
