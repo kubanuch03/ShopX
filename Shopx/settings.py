@@ -160,10 +160,10 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 STATIC_URL = "/static/"
-STATIC_ROOT = "/usr/src/app/static"
+STATIC_ROOT = "/home/hello/Desktop"
 
 MEDIA_URL = "/media/"
-MEDIA_ROOT = "/usr/src/app/media"
+# MEDIA_ROOT = "/home/hello/Desktop"
 
 
 CACHES = {
@@ -216,7 +216,7 @@ CHANNEL_LAYERS = {
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': ['redis://redis:6379/1'],
+        'LOCATION': ['redis://127.0.0.1:6379/1'],
         
     }
 }

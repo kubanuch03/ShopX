@@ -20,8 +20,8 @@ urlpatterns = [
 #     path('refresh-token/', TokenRefreshView.as_view()),
     path('send-code-to-email/', SellerSendCodeView.as_view(), name='seller-send_password_reset_code'), # отправить code в почту
 
-    path('forget-password/reset/',ForgetPasswordView.as_view(), name='seller-reset_password'), # забыл пароль при входе
-    path('reset-password-profile/', UserResetPasswordView.as_view(), name='seller-reset_password'), # менять пароль в профиле
+    path('forget-password/reset/',SellerSendCodeView.as_view(), name='seller-reset_password'), # забыл пароль при входе
+    path('code/checking/', CodeCheckingView.as_view(), name='seller-reset_password'), # менять пароль в профиле
 
     # path('    path('send-code-to-email/', SellerSendCodeView.as_view(), name='send_password_reset_code'), # отправить code в почту
 

@@ -44,6 +44,17 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ('id', 'slug', 'created', 'updated','mid_ocenka',)
 
+    def to_representation(self, instance):
+        data_product = super().to_representation(instance)
+        
+        if instance.size is not None:
+            data_product['size'] = SizeSerializer(instance.size.only('sizes'), many=True).data
+        else:
+            data_product['size'] = None
+        
+        return data_product
+    
+    
     def get_icon_vip(self, obj):
         if Vip.objects.filter(product=obj).exists():
             return Vip.objects.get(product=obj).icon.url
@@ -65,25 +76,23 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         return count_recall
 
 
+
 class ProductSerializer(serializers.ModelSerializer):
     location = serializers.CharField(read_only=True)
     rating = serializers.DecimalField(max_digits=3, decimal_places=2, read_only=True)
     likes = serializers.IntegerField(read_only=True)
-    discount = serializers.IntegerField(required=False)
+    discount = serializers.IntegerField(required=False, allow_null=True)
     mid_ocenka = serializers.SerializerMethodField() 
     count_recall = serializers.SerializerMethodField() 
     discounted_price = serializers.IntegerField(required=False) 
 
-
     class Meta:
         model = Product
         fields = (
-            'id', 'category', 'podcategory','size', 'name', 'slug', 'image1','image2','image3','image4', 'description', 'price', 'location', 'rating',
-            'available', 'created', 'updated', 'likes', 'discount','mid_ocenka','count_recall','discounted_price'
+            'id', 'category', 'podcategory', 'size', 'name', 'slug', 'image1', 'image2', 'image3', 'image4', 'description', 'price', 'location', 'rating',
+            'available', 'created', 'updated', 'likes', 'discount', 'mid_ocenka', 'count_recall', 'discounted_price'
         )
-        read_only_fields = ('id', 'slug', 'created', 'updated','mid_ocenka',)
-
-    
+        read_only_fields = ('id', 'slug', 'created', 'updated', 'mid_ocenka',)
 
     def apply_discount_to_price(self, price, discount):
         if discount > 0 and discount <= 100:
@@ -93,23 +102,25 @@ class ProductSerializer(serializers.ModelSerializer):
             return price
 
     def create(self, validated_data):
-        price = validated_data['price']
-        discount = validated_data['discount']
+        price = validated_data.get('price')
+        discount = validated_data.get('discount', None)
 
-        email = self.context['request'].user
-        print(email)
+        user = self.context['request'].user
+        validated_data['user'] = user
         
-        validated_data['user'] = email
-        
-        # else:
-        #     raise serializers.ValidationError({"error":"У пользователя не достаточно прав"})
-        if price <= 0 or discount <=0:
-            raise serializers.ValidationError({"price or discount": "Price or Discount must be a positive integer."})
+        if price <= 0:
+            raise serializers.ValidationError({"price": "Price must be a positive integer."})
         
         if discount is not None:
+            if discount <= 0:
+                raise serializers.ValidationError({"discount": "Discount must be a positive integer."})
             discounted_price = self.apply_discount_to_price(price, discount)
             validated_data['discounted_price'] = discounted_price
+        else:
+            validated_data['discounted_price'] = price 
+
         return super().create(validated_data)
+
 
 
 

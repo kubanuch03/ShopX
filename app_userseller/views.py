@@ -235,7 +235,7 @@ class SellerListApiview(generics.ListAPIView):
 class SellerDetailApiview(generics.RetrieveAPIView):
     queryset = SellerProfile.objects.all()
     serializer_class = SellerProfileDetailSerializer
-    # permission_classes = [permissions.IsAdminUser,]
+    permission_classes = [permissions.IsAuthenticated,]
 
 
 
